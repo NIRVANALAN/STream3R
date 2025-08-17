@@ -16,6 +16,7 @@ import gc
 import time
 
 from stream3r.models.stream3r import STream3R
+from stream3r.stream_session import StreamSession
 from stream3r.models.components.utils.load_fn import load_and_preprocess_images
 from stream3r.models.components.utils.pose_enc import pose_encoding_to_extri_intri
 from stream3r.models.components.utils.geometry import unproject_depth_map_to_point_map
@@ -29,9 +30,15 @@ model = STream3R.from_pretrained("yslan/STream3R")
 # -------------------------------------------------------------------------
 # 1) Core model inference
 # -------------------------------------------------------------------------
-def run_model(target_dir, model, mode="causal") -> dict:
+def run_model(target_dir: str, model: STream3R, mode: str="causal", streaming: bool=False) -> dict:
     """
     Run the STream3R model on images in the 'target_dir/images' folder and return predictions.
+
+    Args:
+        target_dir: Directory containing the images subfolder
+        model: STream3R model instance
+        mode: Processing mode ("causal", "window", or "full")
+        streaming: If True, use StreamSession for sequential processing; if False, use batch processing
     """
     print(f"Processing images from {target_dir}")
 
@@ -55,12 +62,28 @@ def run_model(target_dir, model, mode="causal") -> dict:
     print(f"Preprocessed images shape: {images.shape}")
 
     # Run inference
-    print("Running inference...")
+    print(f"Running inference in {'streaming' if streaming else 'batch'} mode...")
     dtype = torch.bfloat16 if torch.cuda.get_device_capability()[0] >= 8 else torch.float16
 
     with torch.no_grad():
         with torch.amp.autocast(dtype=dtype, device_type=device):
-            predictions = model(images)
+            if streaming:
+                # Use StreamSession for sequential processing
+                if mode == "full":
+                    print("Warning: Streaming mode does not support 'full' attention mode. Switching to 'causal' mode.")
+                    mode = "causal"
+
+                session = StreamSession(model, mode=mode)
+
+                # Process images one by one to simulate streaming inference
+                for i in range(images.shape[0]):
+                    image = images[i : i + 1]
+                    predictions = session.forward_stream(image)
+
+                session.clear()
+            else:
+                # Use batch processing (original behavior)
+                predictions = model(images, mode=mode)
 
     # Convert pose encoding to extrinsic and intrinsic matrices
     print("Converting pose encoding to extrinsic and intrinsic matrices...")
@@ -181,6 +204,7 @@ def gradio_demo(
     mask_sky=False,
     prediction_mode="Pointmap Regression",
     mode="causal",
+    streaming=False,
 ):
     """
     Perform reconstruction using the already-created target_dir/images.
@@ -200,7 +224,7 @@ def gradio_demo(
 
     print("Running run_model...")
     with torch.no_grad():
-        predictions = run_model(target_dir, model, mode=mode)
+        predictions = run_model(target_dir, model, mode=mode, streaming=streaming)
 
     # Save predictions
     prediction_save_path = os.path.join(target_dir, "predictions.npz")
@@ -351,7 +375,7 @@ with gr.Blocks(
         color: transparent !important;
         text-align: center !important;
     }
-    
+
     .example-log * {
         font-style: italic;
         font-size: 16px !important;
@@ -360,7 +384,7 @@ with gr.Blocks(
         background-clip: text;
         color: transparent !important;
     }
-    
+
     #my_radio .wrap {
         display: flex;
         flex-wrap: nowrap;
@@ -464,6 +488,14 @@ with gr.Blocks(
                     value="Depthmap and Camera Branch",
                     scale=1,
                     elem_id="my_radio",
+                )
+
+            with gr.Row():
+                streaming = gr.Radio(
+                    [('stream', True), ('batch', False)],
+                    label="Streaming or Batch Mode",
+                    value=False,
+                    scale=1,
                 )
 
             with gr.Row():
@@ -599,6 +631,7 @@ with gr.Blocks(
             mask_sky,
             prediction_mode,
             mode,
+            streaming,
         ],
         outputs=[reconstruction_output, log_output, frame_filter],
     ).then(
