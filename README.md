@@ -220,7 +220,7 @@ We report the peak GPU memory usage (VRAM) and runtime of our full model for pro
 
 
 ## :inbox_tray: Datasets
-We follow the evaluation from **MonST3R**, **Spann3R**, and **CUT3R**.  .
+We follow [CUT3R](https://github.com/CUT3R/CUT3R/blob/main/docs/preprocess.md) to preprocess the dataset for training. The training configuration can be found at ```configs/experiment/stream3r/stream3r.yaml```.
 
 ## 📈 Evaluation
 
