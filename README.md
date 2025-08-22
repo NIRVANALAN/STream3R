@@ -200,7 +200,7 @@ STream3R/
 
 Read our [full paper](https://arxiv.org/abs/2508.10893) for more insights.
 
-## GPU Memory Usage and Runtime
+## ⏳ GPU Memory Usage and Runtime
 
 We report the peak GPU memory usage (VRAM) and runtime of our full model for processing each streaming input using the `StreamSession` implementation. All experiments were conducted at a common resolution of 518 × 384 on a single H200 GPU. The benchmark includes both *Causal* for causal attention and *Window* for sliding window attention with a window size of 5.
 
