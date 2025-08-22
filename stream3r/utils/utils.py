@@ -7,13 +7,14 @@
 import warnings
 from importlib.util import find_spec
 from typing import Any, Callable, Dict, Optional, Tuple
-
+import torchvision.transforms as tvf
 from omegaconf import DictConfig
 
 from stream3r.utils import pylogger, rich_utils
 
 log = pylogger.RankedLogger(__name__, rank_zero_only=True)
 
+ImgDust3r2Stream3r = tvf.Normalize(mean=[-1, -1, -1], std=[2, 2, 2])
 
 def extras(cfg: DictConfig) -> None:
     """Applies optional utilities before the task is started.

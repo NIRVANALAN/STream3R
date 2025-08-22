@@ -42,6 +42,10 @@ seaborn
 pyglet<2
 huggingface-hub[torch]>=0.22
 
+# --------- eval --------- #
+accelerate
+evo
+
 # --------- demo --------- #
 gradio==5.17.1
 onnxruntime

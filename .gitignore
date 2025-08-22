@@ -1,6 +1,9 @@
 logs
 demo_cache
 develop
+eval_results
+data
+data/
 .gradio/
 
 *.ply

@@ -168,7 +168,7 @@ def load_images(folder_or_list, size, square_ok=False, verbose=True, rotate_cloc
 
 
 def load_images_for_eval(
-    folder_or_list, size, square_ok=False, verbose=True, crop=True, patch_size=16, first_image_add_blur=False
+    folder_or_list, size, square_ok=False, verbose=True, crop=True, patch_size=16
 ):
     """open and convert all images in a list or folder to proper input format for DUSt3R"""
     if isinstance(folder_or_list, str):
@@ -220,22 +220,6 @@ def load_images_for_eval(
         W2, H2 = img.size
         if verbose:
             print(f" - adding {path} with resolution {W1}x{H1} --> {W2}x{H2}")
-
-        if first_image_add_blur and i == 0:
-            print(f"adding blur to the first image")
-            img.save("develop/before_blur.png")
-            img = img.filter(PIL.ImageFilter.GaussianBlur(radius=5))
-            # Add random noise
-            img_array = np.array(img)
-            noise = np.random.normal(0, 10, img_array.shape).astype(np.uint8)
-            noisy_img = np.clip(img_array + noise, 0, 255).astype(np.uint8)
-            img = PIL.Image.fromarray(noisy_img)
-            # Add slight color jittering
-            enhancer = PIL.ImageEnhance.Color(img)
-            img = enhancer.enhance(0.8)  # Reduce color saturation slightly
-            # Add slight motion blur
-            img = img.filter(PIL.ImageFilter.BLUR)
-            img.save("develop/after_blur.png")
 
         imgs.append(
             dict(
