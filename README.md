@@ -228,7 +228,7 @@ The evaluation follows [MonST3R](https://github.com/Junyi42/monst3r) and [Spann3
 
 1. Prepare Evaluation Dataset
 
-    We follow the dataset preparation guides from [MonST3R](https://github.com/Junyi42/monst3r/blob/main/data/evaluation_script.md) and [Spann3R](https://github.com/HengyiWang/spann3r/blob/main/docs/data_preprocess.md) to prepare the datasets. For convenience, we provide the processed datasets on [HuggingFace](https://huggingface.co/datasets/yslan/pointmap_regression_evalsets), which can be downloaded directly.
+    We follow the dataset preparation guides from [MonST3R](https://github.com/Junyi42/monst3r/blob/main/data/evaluation_script.md) and [Spann3R](https://github.com/HengyiWang/spann3r/blob/main/docs/data_preprocess.md) to prepare the datasets. For convenience, we provide the processed datasets on [Hugging Face](https://huggingface.co/datasets/yslan/pointmap_regression_evalsets), which can be downloaded directly.
 
     The datasets should be organized as follows under the root directiory of the project:
     ```
@@ -275,7 +275,7 @@ The evaluation follows [MonST3R](https://github.com/Junyi42/monst3r) and [Spann3
     ```bash
     bash eval/mv_recon/run.sh
     ```
-    Results will be saved in `eval_results/mv_recon/${model_name}/${data}logs_all.txt`.
+    Results will be saved in `eval_results/mv_recon/${model_name}/${data}/logs_all.txt`.
 
 
 ## :calendar: TODO
