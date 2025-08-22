@@ -70,6 +70,7 @@
 
 ## :fire: News
 
+- [Aug 22, 2025] The evaluation code is now available!
 - [Aug 15, 2025] Our inference code and weights are released!
 
 
