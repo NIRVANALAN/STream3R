@@ -220,12 +220,67 @@ We report the peak GPU memory usage (VRAM) and runtime of our full model for pro
 
 
 ## :inbox_tray: Datasets
-We follow [CUT3R](https://github.com/CUT3R/CUT3R/blob/main/docs/preprocess.md) to preprocess the dataset for training. The training configuration can be found at ```configs/experiment/stream3r/stream3r.yaml```.
+We follow the evaluation from **MonST3R**, **Spann3R**, and **CUT3R**.  .
+
+## 📈 Evaluation
+
+The evaluation follows [MonST3R](https://github.com/Junyi42/monst3r) and [Spann3R](https://github.com/HengyiWang/spann3r), [CUT3R](https://github.com/CUT3R/CUT3R).
+
+1. Prepare Evaluation Dataset
+
+    We follow the dataset preparation guides from [MonST3R](https://github.com/Junyi42/monst3r/blob/main/data/evaluation_script.md) and [Spann3R](https://github.com/HengyiWang/spann3r/blob/main/docs/data_preprocess.md) to prepare the datasets. For convenience, we provide the processed datasets on [HuggingFace](https://huggingface.co/datasets/yslan/pointmap_regression_evalsets), which can be downloaded directly.
+
+    The datasets should be organized as follows under the root directiory of the project:
+    ```
+    data/
+    ├── 7scenes
+    ├── bonn
+    ├── kitti
+    ├── neural_rgbd
+    ├── nyu-v2
+    ├── scannetv2
+    ├── sintel
+    └── tum
+    ```
+
+2. Run Evaluation
+
+    Use the provided scripts to evaluate different tasks.
+
+    *For Video Depth and Camera Pose Estimation, some datasets contain more than 100 images. To reduce memory usage, we use `StreamSession` to process frames sequentially while managing the KV cache.*
+
+    ### Monodepth
+
+    ```bash
+    bash eval/monodepth/run.sh
+    ```
+    Results will be saved in `eval_results/monodepth/${model_name}/${data}/metric.json`.
+
+    ### Video Depth
+
+    ```bash
+    bash eval/video_depth/run.sh
+    ```
+    Results will be saved in `eval_results/video_depth/${model_name}/${data}/result_scale.json`.
+
+    ### Camera Pose Estimation
+
+    ```bash
+    bash eval/relpose/run.sh
+    ```
+    Results will be saved in `eval_results/relpose/${model_name}/${data}/_error_log.txt`.
+
+    ### Multi-view Reconstruction
+
+    ```bash
+    bash eval/mv_recon/run.sh
+    ```
+    Results will be saved in `eval_results/mv_recon/${model_name}/${data}logs_all.txt`.
 
 
 ## :calendar: TODO
 
-- [ ] Release evaluation code.
+- [x] Release evaluation code.
 - [ ] Release training code.
 - [ ] Release the metric-scale version.
 
