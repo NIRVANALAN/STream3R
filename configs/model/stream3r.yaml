@@ -6,10 +6,10 @@ resume_from_checkpoint: ${ckpt_path}
 eval_use_pts3d_from_local_head: true
 
 train_criterion:
-  _target_: stream3r.dust3r.losses.STream3RLoss
+  _target_: stream3r.loss.losses.CausalLoss
 
 validation_criterion:
-  _target_: stream3r.dust3r.losses.STream3RLoss
+  _target_: stream3r.loss.losses.CausalLoss
 
 optimizer:
   _target_: torch.optim.AdamW

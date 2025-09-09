@@ -83,12 +83,12 @@ model:
     warmup_epochs: 1
 
   train_criterion:
-    _target_: stream3r.dust3r.losses.STream3RLoss
+    _target_: stream3r.loss.losses.CausalLoss
     gradient_loss: grad
     is_metric: false
 
   validation_criterion:
-    _target_: stream3r.dust3r.losses.STream3RLoss
+    _target_: stream3r.loss.losses.CausalLoss
     gradient_loss: grad
     is_metric: false
 
