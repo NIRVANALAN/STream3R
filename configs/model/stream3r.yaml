@@ -1,6 +1,6 @@
 _target_: stream3r.models.multiview_dust3r_module.MultiViewDUSt3RLitModule
 
-pretrained: /path/to/checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth
+pretrained: null
 resume_from_checkpoint: ${ckpt_path}
 
 eval_use_pts3d_from_local_head: true
@@ -35,7 +35,7 @@ scheduler:
   eta_min: 1e-06
 
 net:
-  _target_: stream3r.models.stream3r.stream3r.STream3R
+  _target_: stream3r.models.stream3r.STream3R
 
 
 # compile model for faster training with pytorch 2.0

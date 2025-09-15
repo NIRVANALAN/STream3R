@@ -70,6 +70,7 @@
 
 ## :fire: News
 
+- [Sep 16, 2025] The complete training code is released!
 - [Aug 22, 2025] The evaluation code is now available!
 - [Aug 15, 2025] Our inference code and weights are released!
 
@@ -103,6 +104,7 @@
     ```
 
 ## :computer: Inference
+
 You can now try STream3R with the following code. The checkpoint will be downloaded automatically from [Hugging Face](https://huggingface.co/yslan/STream3R). 
 
 You can set the inference mode to `causal` for causal attention, `window` for sliding window attention (with a default window size of 5), or `full` for bidirectional attention.
@@ -220,8 +222,33 @@ We report the peak GPU memory usage (VRAM) and runtime of our full model for pro
 | Window    | 5.49   | 6.53   | 6.53   | 6.53   | 6.53   | 6.53   | 6.53   | 6.53   | 6.53   |
 
 
-## :inbox_tray: Datasets
-We follow [CUT3R](https://github.com/CUT3R/CUT3R/blob/main/docs/preprocess.md) to preprocess the dataset for training. The training configuration can be found at ```configs/experiment/stream3r/stream3r.yaml```.
+## :hotsprings: Training
+
+1. Prepare Dataset
+
+    We follow [CUT3R](https://github.com/CUT3R/CUT3R/blob/main/docs/preprocess.md) to preprocess the dataset for training.
+
+2. Set Up Config
+
+    Update training config file ```configs/experiment/stream3r/stream3r.yaml``` as needed. For example:
+    - Set `pretrained` to the path of the [VGG-T checkpoint](https://huggingface.co/facebook/VGGT-1B/resolve/main/model.pt).
+    - Set `data_root` to the directory where you saved the processed dataset. 
+
+3. Launch training with:
+    ```bash
+    python fast3r/train.py experiment=stream3r/stream3r
+    ```
+
+4. After training, you can convert the checkpoint into a `state_dict` file, for example:
+    ```python
+    from lightning.pytorch.utilities.deepspeed import convert_zero_checkpoint_to_fp32_state_dict
+
+    convert_zero_checkpoint_to_fp32_state_dict(
+        checkpoint_dir="logs/stream3r/runs/stream3r_99999/checkpoints/000-00002000.ckpt",
+        output_file="logs/stream3r/runs/stream3r_99999/checkpoints/last_aggregated.ckpt",
+        tag=None
+    )
+    ```
 
 ## 📈 Evaluation
 
@@ -282,7 +309,7 @@ The evaluation follows [MonST3R](https://github.com/Junyi42/monst3r) and [Spann3
 ## :calendar: TODO
 
 - [x] Release evaluation code.
-- [ ] Release training code.
+- [x] Release training code.
 - [ ] Release the metric-scale version.
 
 

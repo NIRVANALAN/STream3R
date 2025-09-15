@@ -9,7 +9,7 @@ seed: 42
 
 tags: ["train", "stream3r"]
 
-task_name: stream3
+task_name: stream3r
 slurm_job_id: 99999 # must set in the command line
 
 # ckpt_path: /path/to/resume.ckpt  # uncomment to resume training from a checkpoint
@@ -20,7 +20,7 @@ paths:
 logger:
   wandb:
     name: ${task_name}_${slurm_job_id}
-    project: "stream3r."
+    project: stream3r
 
 data:
   data_scaling: 1.0
@@ -71,10 +71,8 @@ data:
       - 74000 @ DL3DV_Multi(allow_repeat=${data.allow_repeat}, split='train', ROOT="${data.data_root}/processed_dl3dv_ours_parts/processed_dl3dv_ours", aug_crop=16, resolution=${data.resolution}, transform=ColorJitter, num_views=${data.num_views}, n_corres=${data.n_corres_train}) +
       - 36000 @ DynamicReplica(allow_repeat=${data.allow_repeat}, split='train', ROOT="${data.data_root}/processed_dynamic_replica/", aug_crop=16, resolution=${data.resolution}, transform=ColorJitter, num_views=${data.num_views}, n_corres=${data.n_corres_train})
 
-    validation_datasets:
-      - 100 @ Co3d_Multiview_Cut3R(allow_repeat=False, split='test', ROOT='${data.data_root}/processed_co3d', resolution=${data.resolution}, num_views=${data.num_views}, seed=777, n_corres=${data.n_corres_train})
-
 model:
+  pretrained: weights/vggt/model.pt
   net:
     freeze: encoder
 
@@ -113,6 +111,7 @@ trainer:
   plugins: null
   limit_val_batches: 0
   precision: bf16-mixed
+  log_every_n_steps: 20
 
 callbacks:
   model_checkpoint:

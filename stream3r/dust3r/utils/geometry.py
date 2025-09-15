@@ -126,7 +126,6 @@ def geotrf(Trf, pts, ncol=None, norm=False):
 def inv(mat):
     """Invert a torch or numpy matrix"""
     if isinstance(mat, torch.Tensor):
-        # modified by yihang as CUSOLVER_STATUS_NOT_INITIALIZED on aliyun
         # return torch.linalg.inv(mat)
         # for mixed precision training
         if mat.dtype == torch.bfloat16:

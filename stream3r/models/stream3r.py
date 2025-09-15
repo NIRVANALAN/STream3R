@@ -63,6 +63,9 @@ class STream3R(nn.Module, PyTorchModelHubMixin):
                 - world_points_conf (torch.Tensor): Confidence scores for world points with shape [B, S, H, W]
                 - images (torch.Tensor): Original input images, preserved for visualization
         """
+        if self.training:
+            images = torch.stack([view["img"] for view in images], dim=1)
+            images = (images + 1.) / 2.
 
         # If without batch dimension, add it
         if len(images.shape) == 4:

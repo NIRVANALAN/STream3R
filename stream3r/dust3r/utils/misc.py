@@ -72,7 +72,6 @@ def transpose_to_landscape(head, activate=True):
         return res
 
     def wrapper_yes(decout, true_shape):
-        # [Yihang]: Hardcode when inference, this module should work as PatchEmbedDust3R
         if not head.training:
             return wrapper_no(decout, true_shape)
 

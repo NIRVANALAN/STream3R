@@ -1,0 +1,231 @@
+import os.path as osp
+import pickle
+import cv2
+import numpy as np
+import itertools
+import os
+import sys
+
+sys.path.append(osp.join(osp.dirname(__file__), "..", ".."))
+from tqdm import tqdm
+from stream3r.dust3r.datasets_cut3r.base.base_multiview_dataset import BaseMultiViewDataset
+from stream3r.dust3r.utils.image import imread_cv2
+from stream3r.dust3r.utils.geometry import inv
+
+from safetensors.numpy import save_file, load_file
+
+
+class DynamicReplica(BaseMultiViewDataset):
+    def __init__(self, *args, ROOT, **kwargs):
+        self.ROOT = ROOT
+        self.video = True
+        self.is_metric = True
+        self.max_interval = 16
+        super().__init__(*args, **kwargs)
+
+        self.loaded_data = self._load_data(self.split)
+
+    def _load_data(self, split):
+
+        if os.path.exists(osp.join(self.ROOT, f'pre-calculated-loaddata-{self.num_views}.pkl')):
+            with open(osp.join(self.ROOT, f'pre-calculated-loaddata-{self.num_views}.pkl'), 'rb') as f:
+                pre_calculated_data = pickle.load(f)
+
+                self.scenes = pre_calculated_data['scenes']
+                self.sceneids = pre_calculated_data['sceneids']
+                self.images = pre_calculated_data['images']
+                self.start_img_ids = pre_calculated_data['start_img_ids']
+                self.scene_img_list = pre_calculated_data['scene_img_list']
+
+            return
+
+        self.scenes = os.listdir(os.path.join(self.ROOT, split))
+
+        offset = 0
+        scenes = []
+        sceneids = []
+        scene_img_list = []
+        images = []
+        start_img_ids = []
+
+        j = 0
+        for scene in tqdm(self.scenes):
+            scene_dir = osp.join(self.ROOT, self.split, scene, "left")
+            if not os.path.isdir(scene_dir):
+                continue
+            rgb_dir = osp.join(scene_dir, "rgb")
+            basenames = sorted(
+                [f[:-4] for f in os.listdir(rgb_dir) if f.endswith(".png")],
+                key=lambda x: float(x),
+            )
+            num_imgs = len(basenames)
+            img_ids = list(np.arange(num_imgs) + offset)
+            cut_off = (
+                self.num_views if not self.allow_repeat else max(self.num_views // 3, 3)
+            )
+            if num_imgs < cut_off:
+                print(f"Skipping {scene}")
+                continue
+
+            start_img_ids_ = img_ids[: num_imgs - cut_off + 1]
+            start_img_ids.extend(start_img_ids_)
+            sceneids.extend([j] * num_imgs)
+            images.extend(basenames)
+            scenes.append(scene)
+            scene_img_list.append(img_ids)
+
+            # offset groups
+            offset += num_imgs
+            j += 1
+
+        self.scenes = scenes
+        self.sceneids = sceneids
+        self.images = images
+        self.start_img_ids = start_img_ids
+        self.scene_img_list = scene_img_list
+
+        with open(osp.join(self.ROOT, f'pre-calculated-loaddata-{self.num_views}.pkl'), 'wb') as f:
+            pickle.dump(
+                dict(scenes=self.scenes,
+                    sceneids=self.sceneids,
+                    images=images,
+                    start_img_ids=start_img_ids,
+                    scene_img_list=scene_img_list,), 
+                f,
+            )
+
+
+    def __len__(self):
+        return len(self.start_img_ids)
+
+    def get_image_num(self):
+        return len(self.images)
+
+    def _get_views(self, idx, resolution, rng, num_views):
+        start_id = self.start_img_ids[idx]
+        all_image_ids = self.scene_img_list[self.sceneids[start_id]]
+        pos, ordered_video = self.get_seq_from_start_id(
+            num_views,
+            start_id,
+            all_image_ids,
+            rng,
+            max_interval=self.max_interval,
+            video_prob=1.0,
+            fix_interval_prob=1.0,
+        )
+        image_idxs = np.array(all_image_ids)[pos]
+
+        views = []
+        for v, view_idx in enumerate(image_idxs):
+            scene_id = self.sceneids[view_idx]
+            scene_dir = osp.join(self.ROOT, self.split, self.scenes[scene_id], "left")
+            rgb_dir = osp.join(scene_dir, "rgb")
+            depth_dir = osp.join(scene_dir, "depth")
+            cam_dir = osp.join(scene_dir, "cam")
+
+            basename = self.images[view_idx]
+
+            # Load RGB image
+            rgb_image = imread_cv2(osp.join(rgb_dir, basename + ".png"))
+            # Load depthmap
+            depthmap = np.load(osp.join(depth_dir, basename + ".npy"))
+            depthmap[~np.isfinite(depthmap)] = 0  # invalid
+
+            cam = load_file(osp.join(cam_dir, basename + ".safetensor"))
+            camera_pose = cam["pose"]
+            intrinsics = cam["intrinsics"]
+
+            # ============fix 
+            pytorch3d_w2c = inv(camera_pose)
+            pytorch3d_w2c[:2, 3] *= -1
+
+            opencv_w2c = np.eye(4)
+            opencv_w2c[:3, :3] = pytorch3d_w2c[:3, :3].T
+            opencv_w2c[:3, 3] = pytorch3d_w2c[:3, 3]
+            opencv_w2c[:2] *= -1
+
+            camera_pose = inv(opencv_w2c)
+            # ============fix done
+
+            rgb_image, depthmap, intrinsics = self._crop_resize_if_necessary(
+                rgb_image, depthmap, intrinsics, resolution, rng=rng, info=view_idx
+            )
+
+            # generate img mask and raymap mask
+            img_mask, ray_mask = self.get_img_and_ray_masks(
+                self.is_metric, v, rng, p=[0.85, 0.10, 0.05]
+            )
+
+            views.append(
+                dict(
+                    img=rgb_image,
+                    depthmap=depthmap.astype(np.float32),
+                    camera_pose=camera_pose.astype(np.float32),
+                    camera_intrinsics=intrinsics.astype(np.float32),
+                    dataset="dynamic_replica",
+                    label=self.scenes[scene_id] + "_" + basename,
+                    instance=f"{str(idx)}_{str(view_idx)}",
+                    is_metric=self.is_metric,
+                    is_video=ordered_video,
+                    quantile=np.array(1.0, dtype=np.float32),
+                    img_mask=img_mask,
+                    ray_mask=ray_mask,
+                    camera_only=False,
+                    depth_only=False,
+                    single_view=False,
+                    reset=False,
+                )
+            )
+        assert len(views) == num_views
+        return views
+
+
+if __name__ == "__main__":
+    import torch
+    import pause
+    from torchvision.transforms import ToPILImage
+    from stream3r.dust3r.datasets.base.base_stereo_view_dataset import view_name
+    from stream3r.dust3r.utils.image import rgb
+    from stream3r.dust3r.viz import SceneViz, auto_cam_size
+    from IPython.display import display
+    from stream3r.dust3r.datasets.utils.transforms import ImgNorm, convert_input_to_pred_format, vis_track
+    from stream3r.dust3r.utils.geometry import (
+        geotrf,
+        inv,
+    )
+    from stream3r.viz.viser_visualizer_track import start_visualization
+
+    def main():
+        dataset = DynamicReplica(
+            split="train", allow_repeat=False, ROOT="/mnt/storage/yslan-data/cut3r_processed/processed_dynamic_replica/",
+            aug_crop=0, resolution=(512, 384), num_views=20, transform=ImgNorm
+        )
+
+        # import random
+        # for i in random.sample(range(len(dataset)), 100):
+        #     views = dataset[i]
+        #     print(i)
+
+        select_idx = 1
+        views = dataset[select_idx]
+        output = convert_input_to_pred_format(views)
+
+        # save_path = os.path.join("develop/2d_compare/test_data", views[0]['dataset'] + str(select_idx))
+        # os.makedirs(save_path, exist_ok=True)
+        # for i in range(len(views)):
+        #     print(view_name(views[i]))
+        #     ToPILImage()(rgb(views[i]["img"])).save(f"{save_path}/{i}.png")
+
+        server = start_visualization(
+            output=output,
+            min_conf_thr_percentile=0,
+            global_conf_thr_value_to_drop_view=1,
+            point_size=0.0016,
+        )
+
+        # share_url = servers.request_share_url()
+        # print(share_url)
+
+        pause.days(1)
+
+    main()

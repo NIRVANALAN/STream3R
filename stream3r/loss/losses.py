@@ -252,15 +252,15 @@ class CausalLoss(MultiLoss):
         total_loss = pts3d_loss + loss_camera["loss_camera"]
 
         # logs
-        details[self_name + "_pts3d_loss" + "/00"] = float(pts3d_loss)
-        details[self_name + "_pts3d_loss_global" + "_conf" + "/00"] = float(loss_pts3d_global["loss_conf"])
-        details[self_name + "_pts3d_loss_global" + "_grad" + "/00"] = float(loss_pts3d_global["loss_grad"])
-        details[self_name + "_depth_loss" + "_conf" + "/00"] = float(loss_depth["loss_conf"])
-        details[self_name + "_depth_loss" + "_grad" + "/00"] = float(loss_depth["loss_grad"])
+        details[self_name + "_pts3d_loss" + "/00"] = float(pts3d_loss.detach())
+        details[self_name + "_pts3d_loss_global" + "_conf" + "/00"] = float(loss_pts3d_global["loss_conf"].detach())
+        details[self_name + "_pts3d_loss_global" + "_grad" + "/00"] = float(loss_pts3d_global["loss_grad"].detach())
+        details[self_name + "_depth_loss" + "_conf" + "/00"] = float(loss_depth["loss_conf"].detach())
+        details[self_name + "_depth_loss" + "_grad" + "/00"] = float(loss_depth["loss_grad"].detach())
 
-        details[self_name + "_camera_loss" + "_loss_camera" + "/00"] = float(loss_camera["loss_camera"])
-        details[self_name + "_camera_loss" + "_loss_T" + "/00"] = float(loss_camera["loss_T"])
-        details[self_name + "_camera_loss" + "_loss_R" + "/00"] = float(loss_camera["loss_R"])
-        details[self_name + "_camera_loss" + "_loss_fl" + "/00"] = float(loss_camera["loss_fl"])
+        details[self_name + "_camera_loss" + "_loss_camera" + "/00"] = float(loss_camera["loss_camera"].detach())
+        details[self_name + "_camera_loss" + "_loss_T" + "/00"] = float(loss_camera["loss_T"].detach())
+        details[self_name + "_camera_loss" + "_loss_R" + "/00"] = float(loss_camera["loss_R"].detach())
+        details[self_name + "_camera_loss" + "_loss_fl" + "/00"] = float(loss_camera["loss_fl"].detach())
 
         return total_loss, details

@@ -57,7 +57,6 @@ class ManyAR_PatchEmbed(PatchEmbed):
         super().__init__(img_size, patch_size, in_chans, embed_dim, norm_layer, flatten)
 
     def forward(self, img, true_shape):
-        # [Yihang]: Hardcode when inference, this module should work as PatchEmbedDust3R
         if not self.training:
             x = img
             B, C, H, W = x.shape
@@ -75,7 +74,6 @@ class ManyAR_PatchEmbed(PatchEmbed):
             return x, pos 
 
         B, C, H, W = img.shape
-        # [Yihang]: Hardcode when inference, this module should work as PatchEmbedDust3R
         assert W >= H, f"img should be in landscape mode, but got {W=} {H=}"
         assert (
             H % self.patch_size[0] == 0
@@ -107,9 +105,6 @@ class ManyAR_PatchEmbed(PatchEmbed):
 
         # allocate space for result and set the content
         x = img.new_empty((B, n_tokens, self.embed_dim), dtype=next(self.named_parameters())[1].dtype)  # dynamically set dtype based on the current precision
-        # print(x.dtype) # torch.float32
-        # print(new_landscape_content.dtype) # torch.float16
-        # Yihang: we add .to(x.dtype) here so that the demo_track.py will not raise a precision mismatch error
         if is_landscape.any():
             x[is_landscape] = new_landscape_content.to(x.dtype)
         if is_portrait.any():
