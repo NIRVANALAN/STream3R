@@ -240,6 +240,8 @@ We report the peak GPU memory usage (VRAM) and runtime of our full model for pro
     ```
 
 4. After training, you can convert the checkpoint into a `state_dict` file, for example:
+   <details> <summary>Click to view code for checkpoint conversion</summary>
+   
     ```python
     from lightning.pytorch.utilities.deepspeed import convert_zero_checkpoint_to_fp32_state_dict
 
@@ -248,7 +250,32 @@ We report the peak GPU memory usage (VRAM) and runtime of our full model for pro
         output_file="logs/stream3r/runs/stream3r_99999/checkpoints/last_aggregated.ckpt",
         tag=None
     )
+
+    # Convert `.ckpt` to `.safetensors` for demo.py
+    def convert_ckpt_to_safetensors(ckpt_path, output_path):
+        print(f"Loading checkpoint from {ckpt_path}")
+        ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+        
+        if "state_dict" in ckpt:
+            state_dict = ckpt["state_dict"]
+        else:
+            state_dict = ckpt
+        
+        print("Converting state dict...")
+        converted_state_dict = {}
+        for k, v in state_dict.items():
+            if k.startswith("net."):
+                k = k[4:]  # Remove "net." prefix
+            converted_state_dict[k] = v.contiguous()
+       
+        print(f"Saving to {output_path}")
+        save_file(converted_state_dict, output_path)
+        print("Done!")
+
+    convert_ckpt_to_safetensors("logs/stream3r/runs/stream3r_99999/checkpoints/last_aggregated.ckpt", "model.safetensors"
     ```
+
+    </details>
 
 ## 📈 Evaluation
 
