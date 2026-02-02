@@ -1,6 +1,6 @@
 <div align="center">
     <h1>
-    STream3R: Scalable Sequential 3D Reconstruction with Causal Transformer
+    STream3R: Scalable Sequential 3D Reconstruction with Causal Transformer (ICLR 2026)
     </h1>
 </div>
 
@@ -11,6 +11,9 @@
         </a>
         <a href="https://arxiv.org/abs/2508.10893" target='_blank'>
         <img src="https://img.shields.io/badge/arXiv-2508.10893-b31b1b.svg">
+        </a>
+        <a href="https://arxiv.org/abs/2508.10893" target='_blank'>
+        <img src="https://img.shields.io/badge/OpenreRiew-RTTYGeC2Io-red">
         </a>
         <img src="https://visitor-badge.laobi.icu/badge?page_id=yhluo.STream3R">
     </h4>
@@ -70,6 +73,7 @@
 
 ## :fire: News
 
+- [Jan 26, 2026] Accepted to ICLR 2026!
 - [Sep 16, 2025] The complete training code is released!
 - [Aug 22, 2025] The evaluation code is now available!
 - [Aug 15, 2025] Our inference code and weights are released!
@@ -118,6 +122,7 @@ from stream3r.models.components.utils.load_fn import load_and_preprocess_images
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 model = STream3R.from_pretrained("yslan/STream3R").to(device)
+model.eval()
 
 example_dir = "examples/static_room"
 image_names = [os.path.join(example_dir, file) for file in sorted(os.listdir(example_dir))]
@@ -127,6 +132,8 @@ with torch.no_grad():
     # Use one mode "causal", "window", or "full" in a single forward pass
     predictions = model(images, mode="causal")
 ``` 
+
+A script is already at [inference_stream3r.py](inference_stream3r.py).
 
 We also support a KV cache version to enable streaming input using `StreamSession`. The `StreamSession` takes sequential input and processes them one by one, making it suitable for real-time or low-latency applications. This streaming 3D reconstruction pipeline can be applied in various scenarios such as real-time robotics, autonomous navigation, online 3D understanding and SLAM. An example usage is shown below:
 
@@ -346,14 +353,14 @@ This project is licensed under <a rel="license" href="./LICENSE">NTU S-Lab Licen
 
 ## :pencil: Citation
 
-If you find our code or paper helps, please consider citing:
+If you find our code or paper helps, please consider citing [bib](https://nirvanalan.github.io/projects/stream3r/static/bibtex.txt):
 
 ```bibtex
-@article{stream3r2025,
-  title={STream3R: Scalable Sequential 3D Reconstruction with Causal Transformer},
-  author={Lan, Yushi and Luo, Yihang and Hong, Fangzhou and Zhou, Shangchen and Chen, Honghua and Lyu, Zhaoyang and Yang, Shuai and Dai, Bo and Loy, Chen Change and Pan, Xingang},
-  booktitle={arXiv preprint arXiv:2508.10893},
-  year={2025}
+@inproceedings{stream3r2025,
+title={{STream3R}: Scalable Sequential {3D} Reconstruction with Causal Transformer},
+author={Lan, Yushi and Luo, Yihang and Hong, Fangzhou and Zhou, Shangchen and Chen, Honghua and Lyu, Zhaoyang and Yang, Shuai and Dai, Bo and Loy, Chen Change and Pan, Xingang},
+booktitle = {ICLR},
+year={2026}
 }
 ```
 ## :pencil: Acknowledgments
