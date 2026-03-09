@@ -25,7 +25,7 @@ logger:
 data:
   data_scaling: 1.0
   data_root: /data
-  num_views: 24
+  num_views: 10
   resolution:
     - [518, 392]
     - [518, 378]
