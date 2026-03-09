@@ -73,6 +73,7 @@
 
 ## :fire: News
 
+- [Mar 9, 2026] Check out the DUSt3R-based metric-scale STream3R[α] version on the [alpha branch](https://github.com/NIRVANALAN/STream3R/tree/alpha).
 - [Jan 26, 2026] Accepted to ICLR 2026!
 - [Sep 16, 2025] The complete training code is released!
 - [Aug 22, 2025] The evaluation code is now available!
@@ -344,7 +345,7 @@ The evaluation follows [MonST3R](https://github.com/Junyi42/monst3r) and [Spann3
 
 - [x] Release evaluation code.
 - [x] Release training code.
-- [ ] Release the metric-scale version.
+- [x] Release the metric-scale version, see branch [alpha](https://github.com/NIRVANALAN/STream3R/tree/alpha).
 
 
 ## :page_with_curl: License
