@@ -1,0 +1,49 @@
+# @package _global_
+defaults:
+  - framepack3r_v3
+
+# num_views: 4 # ! faster pre-training
+# num_views: 5 # ! faster pre-training
+num_views: 8 # 2 + 3*2
+# num_views: 2 # 2 + 3*2
+# num_views: 10 # 
+
+num_test_views: ${num_views}
+# fixed_length: False # as in https://github.com/CUT3R/CUT3R/blob/main/config/stage3.yaml
+fixed_length: True # as in https://github.com/CUT3R/CUT3R/blob/main/config/stage3.yaml
+
+
+
+data_loader:
+  train:
+    # batch_size: 4 # ! v=7, 90gib
+    batch_size: 6 # 
+  # test:
+  #   batch_size: 1
+  # val:
+  #   batch_size: 1
+
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    backbone:
+      name: FramePack3Rv3_Abla_Mem_with_KVCache3 # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+
+
+resolution_stage1: 224 # align with slam3r
+
+dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset5: ScanNetpp_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_scannetpp_fix/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset35: Aria_Seq(allow_repeat=${allow_repeat}, split=None, ROOT="${dataset_root}/processed_ase/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset12: VirtualKITTI2_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="${dataset_root}/processed_vkitti", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+# ! for debug
+# train_dataset: 44800 @ ${dataset0} # + 74000 @ ${dataset15}
+# train_dataset: 11200 @ ${dataset7}
+
+train_dataset: 44800 @ ${dataset0} + 33600 @ ${dataset5} + 9400 @ ${dataset35} + 5600 @ ${dataset12}
+
+optimizer:
+  lr: 5e-5
+  backbone_lr_multiplier: 0.2

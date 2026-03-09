@@ -1,0 +1,33 @@
+# @package _global_
+defaults:
+  - framepack3r_v3_224
+
+num_views: 4 # ! faster pre-training
+# # num_views: 5 # ! faster pre-training
+# num_views: 8 # 2 + 3*2
+# # num_views: 2 # 2 + 3*2
+# # num_views: 10 # 
+
+# num_test_views: ${num_views}
+# fixed_length: False # as in https://github.com/CUT3R/CUT3R/blob/main/config/stage3.yaml
+fixed_length: True # as in https://github.com/CUT3R/CUT3R/blob/main/config/stage3.yaml
+
+
+
+data_loader:
+  train:
+    batch_size: 32
+
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    backbone:
+      name: FramePack3Rv3_Abla_Mem_cut3r_v2init_nope
+
+
+# train_dataset: 44800 @ ${dataset0}
+
+optimizer:
+  lr: 1e-4
+  backbone_lr_multiplier: 0.1

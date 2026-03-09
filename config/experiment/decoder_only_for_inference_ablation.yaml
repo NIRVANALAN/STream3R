@@ -1,0 +1,23 @@
+# @package _global_
+defaults:
+  # - cut3r_dataset_co3d_pired_stage3_noKInjection_CamInj
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-hybridCA
+  # ablation
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-224abla-noinj # ours, no inj version
+  - framepack3r_v3_224_cut3r
+
+# ! add the cfgs from demo parser
+size: 224
+vis_threshold: 1.5
+output_dir: "./demo_tmp"
+seq_path: ""
+
+model:
+  encoder:
+    pretrained_weights: "" # ! no croconet pt required
+
+train_dataset: "" # 
+
+trainer:
+  precision: bf16-mixed

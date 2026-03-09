@@ -1,0 +1,68 @@
+# @package _global_
+defaults:
+  # - cut3r_dataset_debug
+  - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio
+
+# num_views: 4 # ! faster pre-training
+# num_views: 12 # ! faster pre-training
+num_views: 10 # ! faster pre-training
+# num_views: 32 # ! faster pre-training
+
+num_test_views: ${num_views}
+fixed_length: False # as in https://github.com/CUT3R/CUT3R/blob/main/config/stage3.yaml
+
+# 
+
+trainer:
+  max_steps: 1000000 # 1M steps
+  val_check_interval: 10000
+  # val_check_interval: 1
+
+data_loader:
+  train:
+    # batch_size: 6 # 63 gib, then oom
+    # batch_size: 8 # ! 90gib for h200. encoder unfrozen.
+    batch_size: 16 # ! 90gib for h200. encoder unfrozen.
+    # batch_size: 3 # ! 135 gib, for v=12
+    # batch_size: 4 # ! for v=10
+    # batch_size: 5 # ! for v=10, 130gib required.
+    # batch_size: 5 # 133gib memory, works well.
+  test:
+    batch_size: 1
+  val:
+    batch_size: 1
+
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    # has_depth_head: True
+    has_depth_head: False
+    # has_self_pts_head: False
+    has_self_pts_head: True
+    backbone:
+      enable_camera_token: True # predict camera
+
+checkpointing:
+  every_n_train_steps: 5000 #
+  save_top_k: 8
+  
+# dataset_root: "/mnt/yslan-data/cut3r_processed"
+dataset_root: "../../../cut3r_data" # ! reuse previous pkl file
+
+optimizer:
+  # lr: 2.5e-5 # vggt, 2e-4. stereo4D, 2.5e-5
+  # backbone_lr_multiplier: 0.25
+  lr: 5e-5 # vggt, 2e-4. stereo4D, 2.5e-5
+  backbone_lr_multiplier: 0.2
+
+# resolution_stage1: 224 # align with slam3r
+resolution: 224 # align with slam3r
+
+# dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset5: ScanNetpp_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_scannetpp_fix/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset35: Aria_Seq(allow_repeat=${allow_repeat}, split=None, ROOT="${dataset_root}/processed_ase/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset12: VirtualKITTI2_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="${dataset_root}/processed_vkitti", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+
+# train_dataset: 44800 @ ${dataset0} + 33600 @ ${dataset5} + 9400 @ ${dataset35} + 5600 @ ${dataset12}

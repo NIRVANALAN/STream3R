@@ -1,0 +1,12 @@
+defaults:
+  - base_view_sampler
+
+min_distance_between_context_views: 1
+max_distance_between_context_views: 2 # since unstructured dataset
+min_distance_to_context_views: 1
+initial_min_distance_between_context_views: 1
+initial_max_distance_between_context_views: 2 # since unstructured dataset
+
+middle_context_view: true
+num_context_views: 9
+warm_up_steps: 9375

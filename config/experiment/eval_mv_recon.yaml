@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-hybridCA
+  # - framepack3r_v3
+
+  # ! ablation
+  # - framepack3r_v3_224_pack3_stateonly # ca_state_only
+  # - framepack3r_v3_224_cut3r # cut3r
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-224abla-noinj # ours, no inj version
+
+# eval:
+output_dir: eval_results
+device: "cuda"
+size: 512
+# size: 224
+# size: 256
+revisit: 1
+freeze: False
+model_name: "ours"

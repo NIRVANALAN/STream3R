@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - framepack3r_v3_224
+
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    backbone:
+      name: FramePack3Rv3_Abla_FA_no_state 
+

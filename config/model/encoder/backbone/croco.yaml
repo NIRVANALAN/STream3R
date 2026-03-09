@@ -1,0 +1,10 @@
+name: croco
+
+model: ViTLarge_BaseDecoder
+patch_embed_cls: PatchEmbedDust3R
+asymmetry_decoder: true
+
+intrinsics_embed_loc: 'encoder'
+intrinsics_embed_degree: 4
+intrinsics_embed_type: 'token'
+enable_temporal_pe: false

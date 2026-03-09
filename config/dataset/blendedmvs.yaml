@@ -1,0 +1,23 @@
+defaults:
+  - base_dataset
+  - view_sampler: bounded
+  - optional view_sampler_dataset_specific_config@view_sampler: bounded_blendedmvs # 
+  # - optional view_sampler_dataset_specific_config@view_sampler: bounded_co3d # 
+
+name: blendedmvs # why failed
+# name: co3d
+# name: scannetpp #
+# roots: [/oss/3d-dataset/dust3r-dataset/Chunks/co3d-v2] 
+roots: [/cpfs04/shared/landmark_3dgen/lvzhaoyang_group/yslan/dust3r-dataset/BlendedMVS/train] 
+
+input_image_shape: [256, 256]
+original_image_shape: [576, 768] # 
+cameras_are_circular: false
+
+baseline_min: 1e-3
+baseline_max: 1e3 # some has >500 baseline
+max_fov: 120.0
+
+skip_bad_shape: false
+
+visualize: false

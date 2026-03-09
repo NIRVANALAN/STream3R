@@ -1,0 +1,57 @@
+# @package _global_
+defaults:
+  # - cut3r_dataset_debug
+  - cut3r_dataset_co3d_pired_stage3_noKInjection
+
+# num_views: 4 # ! faster pre-training
+# num_views: 10 # ! faster pre-training
+# num_views: 32 # ! faster pre-training
+# num_views: 24 # ! faster pre-training
+# num_views: 16 # ! faster pre-training
+num_views: 8 # ! faster pre-training
+# num_views: 12 # ! faster pre-training
+
+
+data_loader:
+  train:
+    # batch_size: 6 # 
+    batch_size: 8 # 
+    # batch_size: 4
+
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    # has_depth_head: True
+    has_depth_head: False
+    # has_self_pts_head: False
+    has_self_pts_head: True
+    backbone:
+      enable_camera_token: True # predict camera
+
+
+# ! for debug only
+
+# ! if diverse resolution
+dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+# train_dataset: 2800 @ ${dataset0}
+# train_dataset: 44800 @ ${dataset0}
+# train_dataset: 19200 @ ${dataset17} + 44800 @ ${dataset0}
+
+# ! camera_only works now
+# train_dataset: 480 @ ${dataset16} + 448 @ ${dataset0} # also 
+
+# ! 23 datasets all used here. All except for dl3dv.
+# ! Next, move to hybrid resolution.
+train_dataset: 44800 @ ${dataset0} + 56000 @ ${dataset2} + 56000 @ ${dataset3} + 22400
+  @ ${dataset4} + 70000 @ ${dataset6} + 33600 @ ${dataset7} + 12000 @ ${dataset33}
+  + 22400 @ ${dataset9} + 84000 @ ${dataset10} + 56000 @ ${dataset11}
+  + 5600 @ ${dataset12} + 168 @ ${dataset13} + 56000 @ ${dataset14} + 36000 @ ${dataset28}
+  + 2400 @ ${dataset22} + 600 @ ${dataset23} + 36000 @ ${dataset26} + 9400 @ ${dataset27} 
+  + 1400 @ ${dataset29} + 7200 @ ${dataset30} + 28800 @ ${dataset32} + 22400 @ ${dataset8}
+  + 19200 @ ${dataset17} + 480 @ ${dataset16} + 16800 @ ${dataset5}
+
+
+enable_joint_render_and_3d_sup: False

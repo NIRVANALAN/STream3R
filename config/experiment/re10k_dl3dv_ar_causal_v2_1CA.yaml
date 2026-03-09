@@ -1,0 +1,9 @@
+# @package _global_
+
+defaults:
+  - re10k_dl3dv_ar_causal_v1
+
+model:
+  encoder:
+    backbone:
+      name: croco_multi_rw_ar_causal_v2_oneCABlk # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62

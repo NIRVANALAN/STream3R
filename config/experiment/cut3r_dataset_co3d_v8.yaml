@@ -1,0 +1,58 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_debug
+
+
+num_views: 10 # must3r pipeline
+num_test_views: ${num_views}
+
+
+data_loader:
+  train:
+    batch_size: 4 # ! when view=10, 60 gib
+    # batch_size: 12 # 
+    # batch_size: 16 # 38 GiB. cut3r uses bs=16
+    # batch_size: 32 # 71GB
+
+  val:
+    num_workers: 0
+    batch_size: 1 #
+
+# trainer:
+#   max_steps: 50000 
+#   precision: bf16-mixed
+#   accumulate_grad_batches: 1
+#   val_check_interval: 5000
+
+# checkpointing:
+#   every_n_train_steps: 5000 #
+
+
+# ! for overfitting
+trainer: 
+  # max_steps: 5000 
+  max_steps: 75000 
+  precision: bf16-mixed
+  accumulate_grad_batches: 1
+  # val_check_interval: 10
+  val_check_interval: 5000
+checkpointing:
+  # every_n_train_steps: 1000 #
+  every_n_train_steps: 5000 #
+
+optimizer:
+  lr: 1e-4 # 
+  warm_up_steps: 125
+  backbone_lr_multiplier: 0.1
+
+# fixed_length: False # if True, will load fixed num_views
+fixed_length: True # if True, will load fixed num_views
+
+dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# train_dataset: 44800 @ ${dataset0} # 256x256 single resolution. paired view pretrianing.
+
+
+train_dataset: 44800 @ ${dataset0} + 56000 @ ${dataset3_stage1} # 256x256 single resolution. paired view pretrianing.
+
+# test_dataset: 1000 @ Co3d_Multi(allow_repeat=${allow_repeat}, split='test', ROOT='../../cut3r_data/processed_co3d/', resolution=${resolution_stage1}, num_views=${num_test_views}, n_corres=${n_corres_test})
+test_dataset: 1 @ Co3d_Multi(allow_repeat=${allow_repeat}, split='test', ROOT='../../cut3r_data/processed_co3d/', resolution=${resolution_stage1}, num_views=${num_test_views}, n_corres=${n_corres_test})

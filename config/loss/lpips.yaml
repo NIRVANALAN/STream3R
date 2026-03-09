@@ -1,0 +1,6 @@
+lpips:
+  weight: 0.05
+  apply_after_step: 0
+  average_over_mask: False
+  apply_mask_before_mask: False
+  spatial: False

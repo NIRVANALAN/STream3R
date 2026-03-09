@@ -1,0 +1,22 @@
+defaults:
+  - base_dataset
+  - view_sampler: bounded
+  - optional view_sampler_dataset_specific_config@view_sampler: bounded_dl3dv
+
+name: dl3dv
+# roots: [datasets/dl3dv]
+# roots: [/cpfs04/shared/landmark_3dgen/lvzhaoyang_group/yslan/dust3r-dataset/DL3DV/Chunks]
+# roots: [datasets/dl3dv]
+# roots: [datasets/dl3dv_oss]
+# roots: [/oss/3d-dataset/dust3r-dataset/DL3DV/Chunks/]
+roots: [/mnt/yslan-data/pixelSplat/DL3DV/]
+
+input_image_shape: [256, 256]
+original_image_shape: [270, 480]
+cameras_are_circular: false
+
+baseline_min: 1e-3
+baseline_max: 1e2
+max_fov: 100.0
+
+visualize: false

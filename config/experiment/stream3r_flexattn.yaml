@@ -1,0 +1,13 @@
+# @package _global_
+defaults:
+  # - cut3r_dataset_debug
+  - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-224abla
+
+model:
+  encoder:
+    backbone:
+      name: Stream3r_flexattn
+
+
+# debug
+train_dataset: 44800 @ ${dataset0} # for vggtloss debug

@@ -1,0 +1,31 @@
+# @package _global_
+
+defaults:
+  - re10k_dl3dv_ar_causal_v1
+
+model:
+  encoder:
+    backbone:
+      name: croco_multi_rw_ar_causal_v1.5_frame0Mem # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+
+dataset:
+  re10k: # ! object-centric. how?
+    view_sampler:
+      # num_context_views: 8
+      num_context_views: 9
+
+  dl3dv: # ! object-centric. how?
+    view_sampler:
+      # num_context_views: 8
+      num_context_views: 9
+
+data_loader:
+  train:
+    batch_size: 2 # grad acc = 2; try gpu=6, thus same batch size
+
+
+optimizer:
+  # lr: 2e-4
+  lr: 1e-4
+  warm_up_steps: 125
+  backbone_lr_multiplier: 0.1

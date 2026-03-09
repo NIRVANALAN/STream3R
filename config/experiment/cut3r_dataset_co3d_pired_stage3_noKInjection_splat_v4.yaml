@@ -1,0 +1,117 @@
+# @package _global_
+defaults:
+  # - cut3r_dataset_debug
+  - cut3r_dataset_co3d_pired_stage3_noKInjection
+  # - dyna_resolution_dataset # include all dust3r datasets
+
+num_views: 4 # ! faster pre-training
+# num_views: 8 # ! 4 -> 4
+# num_views: 6 # ! 4 -> 4
+# num_views: 10 # ! faster pre-training
+
+fixed_length: True # ! play with 4 input views for now
+allow_repeat: False
+
+
+dataset_root: "../../../cut3r_data" # ! reuse previous pkl file
+
+data_loader:
+  train:
+    # batch_size: 6 # 
+    # batch_size: 4
+    # batch_size: 16
+    # batch_size: 32
+    batch_size: 8
+    # batch_size: 2 # ! must be larget than 1
+    # batch_size: 1
+
+
+checkpointing:
+  every_n_train_steps: 5000 #
+  save_top_k: 4
+
+optimizer:
+  lr: 2.5e-5 # vggt, 2e-4. stereo4D, 2.5e-5
+  # backbone_lr_multiplier: 0.25
+  # lr: 5e-5 # vggt, 2e-4. stereo4D, 2.5e-5
+  # backbone_lr_multiplier: 0.2
+  # lr: 1e-4 # vggt, 2e-4. stereo4D, 2.5e-5
+  backbone_lr_multiplier: 0.1
+  # backbone_lr_multiplier: 0.2
+  # backbone_lr_multiplier: 0.0
+
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    # # has_depth_head: True
+    # has_depth_head: False
+    has_self_pts_head: True
+    backbone: # ! noposplat K injection
+      # enable_camera_token: False # predict camera
+      enable_camera_token: True # predict camera
+      intrinsics_embed_loc: 'encoder'
+      intrinsics_embed_degree: 4
+      intrinsics_embed_type: 'token'
+
+
+
+
+# ! for debug only
+
+# ! if diverse resolution
+# dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+# train_dataset: 2800 @ ${dataset5}
+# train_dataset: 44800 @ ${dataset0}
+# train_dataset: 19200 @ ${dataset17} + 44800 @ ${dataset0}
+
+# ! camera_only works now
+# train_dataset: 480 @ ${dataset16} + 448 @ ${dataset0} # also 
+
+# train_dataset: 44800 @ ${dataset0} + 56000 @ ${dataset2} + 56000 @ ${dataset3} + 22400
+  # @ ${dataset4} + 70000 @ ${dataset6} + 33600 @ ${dataset7} + 12000 @ ${dataset33}
+  # + 22400 @ ${dataset9} + 84000 @ ${dataset10} + 56000 @ ${dataset11}
+  # + 5600 @ ${dataset12} + 168 @ ${dataset13} + 56000 @ ${dataset14} + 36000 @ ${dataset28}
+  # + 2400 @ ${dataset22} + 600 @ ${dataset23} + 36000 @ ${dataset26} + 9400 @ ${dataset27} 
+  # + 1400 @ ${dataset29} + 7200 @ ${dataset30} + 28800 @ ${dataset32} + 22400 @ ${dataset8}
+  # + 19200 @ ${dataset17} + 480 @ ${dataset16}
+
+
+# ! set transform=None
+dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution_stage1}, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset8: BlendedMVS_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_blendedmvs/", aug_crop=16, resolution=${resolution_stage1}, num_views=${num_views}, n_corres=${n_corres_train})
+dataset5: ScanNetpp_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_scannetpp_fix/", aug_crop=16, resolution=${resolution_stage1}, num_views=${num_views}, n_corres=${n_corres_train})
+dataset15: DL3DV_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_dl3dv_ours_parts/processed_dl3dv_ours", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset2: WildRGBD_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_wildrgbd_mp", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+
+# dynamic here
+
+# train_dataset: 44800 @ ${dataset0} # co3d
+# train_dataset: 22401 @ ${dataset8} # blendedmvs
+# train_dataset: 16800 @ ${dataset5} # scannetpp
+# train_dataset: 1400 @ ${dataset29} # gta-5
+
+
+# train_dataset: 22400 @ ${dataset0} + 22401 @ ${dataset8} + 16800 @ ${dataset5}
+# train_dataset: 44800 @ ${dataset0} + 22401 @ ${dataset8} + 16800 @ ${dataset5}
+# train_dataset: 22400 @ ${dataset0} + 16800 @ ${dataset5} # + 42000 @ ${dataset15}
+# train_dataset: 22400 @ ${dataset0} + 22400 @ ${dataset15}
+# train_dataset: 44800 @ ${dataset0}
+train_dataset: 44800 @ ${dataset0} + 56000 @ ${dataset2}
+# train_dataset: 56000 @ ${dataset2}
+
+enable_joint_render_and_3d_sup: True
+hybrid_loading: False
+
+# dataset:
+#   re10k: # ! object-centric. how?
+#     view_sampler:
+#       num_context_views: 4
+#       middle_context_view: false
+#       min_distance_between_context_views: 25
+#       max_distance_between_context_views: 45
+#       min_distance_to_context_views: 0
+#       initial_min_distance_between_context_views: 13
+#       initial_max_distance_between_context_views: 13

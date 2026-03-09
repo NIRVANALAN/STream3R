@@ -1,0 +1,52 @@
+# @package _global_
+
+defaults:
+  - /dataset@_group_.re10k: re10k
+  - /dataset@_group_.dl3dv: dl3dv
+  - override /model/encoder: noposplat
+  - override /model/encoder/backbone: croco
+  - override /loss: [mse, lpips]
+
+wandb:
+  name: re10k_dl3dv
+  tags: [re10k_dl3dv, 512x512]
+
+model:
+  encoder:
+    gs_params_head_type: dpt_gs
+    pose_free: true
+    intrinsics_embed_loc: encoder
+    intrinsics_embed_type: token
+    pretrained_weights: './pretrained_weights/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth'
+
+dataset:
+  re10k:
+    roots: [ datasets/re10k_720p ]
+    skip_bad_shape: true
+    input_image_shape: [ 512, 512 ]
+    original_image_shape: [ 720, 1280 ]
+    view_sampler:
+      warm_up_steps: 9375
+  dl3dv:
+    roots: [ datasets/dl3dv_960p ]
+    skip_bad_shape: true
+    input_image_shape: [ 512, 512 ]
+    original_image_shape: [ 540, 960 ]
+    view_sampler:
+      warm_up_steps: 9375
+
+optimizer:
+  lr: 2e-4
+  warm_up_steps: 125
+  backbone_lr_multiplier: 0.1
+
+data_loader:
+  train:
+    batch_size: 2  # 2 for each dataset, since we have 2 datasets, the total batch size is 4
+
+trainer:
+  max_steps: 18751
+  val_check_interval: 500
+
+checkpointing:
+  every_n_train_steps: 9375

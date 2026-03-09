@@ -1,0 +1,97 @@
+# @package _global_
+defaults:
+  # - /dataset@_group_.scannetpp: scannetpp
+  # - /dataset@_group_.co3d: co3d
+  # - /dataset@_group_.scannetpp: scannetpp
+  - /dataset@_group_.re10k: re10k
+  # - /dataset@_group_.dl3dv: dl3dv
+  - override /model/encoder: noposplat
+  - override /model/encoder/backbone: croco
+  - override /loss: [mse, lpips]
+
+wandb:
+  # name: re10k
+  # tags: [re10k, 256x256]
+  name: re10k_dl3dv_rnn
+  tags: [re10k_dl3dv, 256x256, rnn]
+
+
+model:
+  encoder:
+    gs_params_head_type: dpt_gs
+    pose_free: true
+    intrinsics_embed_loc: encoder
+    intrinsics_embed_type: token
+    pretrained_weights: './pretrained_weights/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth'
+    backbone:
+      # name: croco_multi_rw
+      # name: croco_multi_rw_ar_causal_v1 # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+      name: croco_multi_rw_ar_causal_v1 # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+      # name: croco_multi_rw_ar_causal_v1.5_frame0Mem # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+      # enable_temporal_pe: true
+      enable_temporal_pe: false
+      model: ViTLarge_BaseDecoder_qknorm
+    name: noposplat_multi # ! update the dict in src/model/encoder/__init__.py
+  decoder:
+    make_scale_invariant: true
+
+
+optimizer:
+  # lr: 2e-4
+  lr: 1e-4
+  warm_up_steps: 125
+  backbone_lr_multiplier: 0.1
+
+data_loader:
+  train:
+    # batch_size: 8
+    # batch_size: 4
+    # batch_size: 3 # grad acc = 6
+    # batch_size: 2 # grad acc = 2; try gpu=6, thus same batch size
+    # batch_size: 2 # grad acc = 2; try gpu=6, thus same batch size
+    batch_size: 4 # grad acc = 2; try gpu=6, thus same batch size
+    # batch_size: 1 # grad acc = 2; try gpu=6, thus same batch size
+
+# trainer:
+#   max_steps: 18751
+#   # max_steps: 37502 # shall double the iteration since bs halved.
+#   val_check_interval: 500
+
+trainer:
+  max_steps: 75004 # bs=2
+  precision: bf16-mixed
+  val_check_interval: 5000
+  accumulate_grad_batches: 1
+
+
+checkpointing:
+  # every_n_train_steps: 9375
+  every_n_train_steps: 5000
+
+dataset:
+  # co3d: # ! object-centric. how?
+  #   view_sampler:
+  #     warm_up_steps: 15000
+  #     num_context_views: 9
+  #     middle_context_view: false
+  re10k: # ! object-centric. how?
+    view_sampler:
+      warm_up_steps: 15000
+      num_context_views: 4
+      middle_context_view: false
+      min_distance_between_context_views: 6 # from 45
+      max_distance_between_context_views: 11 # from 90
+      min_distance_to_context_views: 1
+      initial_min_distance_between_context_views: 3 # from 25
+      initial_max_distance_between_context_views: 3
+
+  # dl3dv: # ! object-centric. how?
+  #   view_sampler:
+  #     warm_up_steps: 15000
+  #     num_context_views: 4
+  #     middle_context_view: false
+  #     min_distance_between_context_views: 2 # from 8
+  #     max_distance_between_context_views: 4 # from 22
+  #     min_distance_to_context_views: 1
+  #     initial_min_distance_between_context_views: 1 # from 5 
+  #     initial_max_distance_between_context_views: 2 # from 7

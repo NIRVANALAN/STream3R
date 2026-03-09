@@ -1,0 +1,52 @@
+# @package _global_
+
+defaults:
+  - re10k_dl3dv_ar_causal_v1
+
+model:
+  encoder:
+    backbone:
+      name: croco_multi_rw_ar_causal_v1.6_frame0Mem # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+
+dataset:
+  re10k: # ! object-centric. how?
+    view_sampler:
+      num_context_views: 2 # ! verify why fails
+      # num_context_views: 8
+      # num_context_views: 9
+      # ! if ctx-views == 2:
+      min_distance_between_context_views: 45 # from 45
+      max_distance_between_context_views: 90 # from 90
+      min_distance_to_context_views: 1
+      initial_min_distance_between_context_views: 25 # from 25
+      initial_max_distance_between_context_views: 25
+
+  # dl3dv: # ! object-centric. how?
+  #   view_sampler:
+  #     num_context_views: 2
+      # num_context_views: 8
+      # num_context_views: 9
+
+data_loader:
+  train:
+    # batch_size: 2 # grad acc = 2; try gpu=6, thus same batch size
+    batch_size: 4 # grad acc = 2; try gpu=6, thus same batch size
+    # batch_size: 6 # grad acc = 2; try gpu=6, thus same batch size
+
+
+# dataset:
+#   # co3d: # ! object-centric. how?
+#   #   view_sampler:
+#   #     warm_up_steps: 15000
+#   #     num_context_views: 9
+#   #     middle_context_view: false
+#   re10k: # ! object-centric. how?
+#     view_sampler:
+#       warm_up_steps: 15000
+#       num_context_views: 4
+#       middle_context_view: false
+#       min_distance_between_context_views: 6 # from 45
+#       max_distance_between_context_views: 11 # from 90
+#       min_distance_to_context_views: 1
+#       initial_min_distance_between_context_views: 3 # from 25
+#       initial_max_distance_between_context_views: 3

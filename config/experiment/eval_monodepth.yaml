@@ -1,0 +1,17 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-hybridCA
+  # - framepack3r_v3
+  # ! ablation
+  # - framepack3r_v3_224_cut3r # cut3r
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-224abla-noinj
+
+
+# eval:
+eval_dataset: nyu
+output_dir: eval_results
+device: "cuda"
+no_crop: True
+full_seq: False
+seq_list: null

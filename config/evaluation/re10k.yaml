@@ -1,0 +1,81 @@
+# @package _global_
+
+dataset:
+  re10k:
+    view_sampler:
+      index_path: assets/evaluation_index_re10k.json
+
+evaluation:
+  methods:
+    - name: Ours
+      key: ours
+      path: outputs/test/ours_public_rerun
+    - name: Ours_old
+      key: ours_old
+      path: /local/home/botaye/Codes/pixelsplat/outputs/test/ablation_IntrinToken_lr5_nossim
+
+  side_by_side_path: null
+  animate_side_by_side: false
+  highlighted:
+    # Main Paper
+    - scene: 32ce9b303717a29d
+      target_index: 216
+    - scene: 45e6fa48ddd00e87
+      target_index: 127
+    - scene: 7a13c5debea977a8
+      target_index: 37
+
+#    # Supplemental
+#    # Large
+#    - scene: f04b433b91f569c3
+#      target_index: 52
+#    - scene: c3eaaa4be79355b7
+#      target_index: 27
+#    - scene: 7d5bbbfe59fb6d85
+#      target_index: 30
+#    - scene: 9a44145b51b162ee
+#      target_index: 17
+#    - scene: 043c48135c5e8cc2
+#      target_index: 31
+#    - scene: 40f6d540b9b16531
+#      target_index: 72
+#    - scene: c28856e5ddb0a22c
+#      target_index: 97
+#    - scene: f673068196024955
+#      target_index: 80
+#    # Medium
+#    - scene: 750ddf09bd6d1eab
+#      target_index: 32
+#    - scene: ce827f0c64f90c22
+#      target_index: 143
+#    - scene: 7a13c5debea977a8
+#      target_index: 37
+#    - scene: 18c6473be3bd827a
+#      target_index: 31
+#    - scene: 9a44145b51b162ee
+#      target_index: 17
+#    - scene: 96a2338040f14ccc
+#      target_index: 47
+#    - scene: 7c1333f2b74b067b
+#      target_index: 43
+#    - scene: 3ea8d9787998f70a
+#      target_index: 188
+#    # Small
+#    - scene: 515ff56d91647ed8
+#      target_index: 53
+#    - scene: e40ca395753837ce
+#      target_index: 11
+#    - scene: 33a3fc21efdc8547
+#      target_index: 114
+#    - scene: 1910e79a60d57aa7
+#      target_index: 93
+#    - scene: 04ed1812719e05f0
+#      target_index: 80
+#    - scene: 01fa6190cd47d125
+#      target_index: 124
+#    - scene: d69dc6c3720a2b8b
+#      target_index: 128
+#    - scene: 627be3fb033b8cc0
+#      target_index: 84
+
+  output_metrics_path: baselines/re10k/evaluation_metrics.json

@@ -1,0 +1,72 @@
+# @package _global_
+defaults:
+  - dyna_resolution_dataset # include all dust3r datasets
+  - cut3r_dataset_co3d_pired_stage3_noKInjection_splat
+  # ! re10k already included in config/experiment/re10k_dl3dv_ar_causal_v1.yaml
+  # ! to add dl3dv in that cfg also.
+  # - /dataset@_group_.re10k: re10k
+  # - override /loss: [mse, lpips]
+  # - /dataset@_group_.dl3dv: dl3dv
+
+# num_views: 4 # ! faster pre-training
+# # num_views: 8 # ! faster pre-training
+# # num_views: 10 # ! faster pre-training
+
+# fixed_length: True # ! play with 4 input views for now
+# allow_repeat: False
+
+
+dataset_root: "../../../cut3r_data" # ! reuse previous pkl file
+
+data_loader:
+  train:
+    # batch_size: 6 # 
+    # batch_size: 12
+    batch_size: 16
+    # batch_size: 2 # ! must be larget than 1
+    # batch_size: 1
+
+
+model:
+  encoder:
+    gaussian_adapter:
+      sh_degree: 1
+
+checkpointing:
+  every_n_train_steps: 7500 #
+  save_top_k: 4
+
+
+optimizer:
+  # lr: 1e-4 # 
+  lr: 2.5e-5 # ! following stereo4D, make lr smaller
+  warm_up_steps: 1250
+  backbone_lr_multiplier: 0.25 # 1e-6 for backbone update.
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+
+# train_dataset: 44800 @ ${dataset0} # co3d
+# train_dataset: 22401 @ ${dataset8} # blendedmvs
+# train_dataset: 16800 @ ${dataset5} # scannetpp
+# train_dataset: 1400 @ ${dataset29} # gta-5
+
+# ! only train on popular static dataset
+train_dataset: 32000 @ ${dataset0} + 48000 @ ${dataset2} + 100800 @ ${dataset3} + 56000 @ ${dataset4} + 33600 @ ${dataset5} + 56000 @ ${dataset6} + 33600 @ ${dataset7} + 33600 @ ${dataset8} + 33600 @ ${dataset9} + 100800 @ ${dataset10} + 
+  78400 @ ${dataset11} + 5000 @ ${dataset12} + 
+  1000 @ ${dataset13} + 33600 @ ${dataset14}
+  + 74000 @ ${dataset15}
+
+enable_joint_render_and_3d_sup: True
+hybrid_loading: True # load two dataloaders
+
+# dataset:
+#   re10k: # ! object-centric. how?
+#     view_sampler:
+#       num_context_views: 2
+#       middle_context_view: false
+#       min_distance_between_context_views: 45
+#       max_distance_between_context_views: 90
+#       min_distance_to_context_views: 0
+#       initial_min_distance_between_context_views: 25
+#       initial_max_distance_between_context_views: 25
+

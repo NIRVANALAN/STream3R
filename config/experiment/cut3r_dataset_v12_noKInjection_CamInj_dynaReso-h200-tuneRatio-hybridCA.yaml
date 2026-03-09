@@ -1,0 +1,77 @@
+# @package _global_
+defaults:
+  # - cut3r_dataset_debug
+  - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio
+
+num_views: 4 # ! faster pre-training
+# num_views: 12 # ! faster pre-training
+# num_views: 10 # ! faster pre-training
+# num_views: 32 # ! faster pre-training
+
+num_test_views: ${num_views}
+# fixed_length: False # as in https://github.com/CUT3R/CUT3R/blob/main/config/stage3.yaml
+fixed_length: True # as in https://github.com/CUT3R/CUT3R/blob/main/config/stage3.yaml
+
+# 
+
+trainer:
+  max_steps: 1000000 # 1M steps
+  val_check_interval: 10000
+  # val_check_interval: 1
+
+data_loader:
+  train:
+    # batch_size: 6 # 63 gib, then oom
+    # batch_size: 8 # ! 90gib for h200. encoder unfrozen.
+    batch_size: 12 # ! 90gib for h200. encoder unfrozen.
+    # batch_size: 14 # ! 90gib for h200. encoder unfrozen.
+    # batch_size: 16 # ! 90gib for h200. encoder unfrozen.
+    # batch_size: 3 # ! 135 gib, for v=12
+    # batch_size: 4 # ! for v=10
+    # batch_size: 5 # ! for v=10, 130gib required.
+    # batch_size: 5 # 133gib memory, works well.
+  test:
+    batch_size: 1
+  val:
+    batch_size: 1
+
+
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    backbone:
+      name: hybrid_attn # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+  
+# dataset_root: "/mnt/yslan-data/cut3r_processed"
+dataset_root: "../../../cut3r_data" # ! reuse previous pkl file
+
+optimizer:
+  # lr: 2.5e-5 # vggt, 2e-4. stereo4D, 2.5e-5
+  # backbone_lr_multiplier: 0.25
+  lr: 5e-5 # vggt, 2e-4. stereo4D, 2.5e-5
+  backbone_lr_multiplier: 0.2
+
+
+
+# train_dataset: 44800 @ ${dataset0} + 12000 @ ${dataset33}
+# train_dataset: 44800 @ ${dataset0} + 12000 @ ${dataset33}
+# train_dataset: 12000 @ ${dataset34} + 12000 @ ${dataset35}
+
+# train_dataset: 28800 @ ${dataset35} + 44800 @ ${dataset0}
+
+# stage-3
+# train_dataset: 44800 @ ${dataset0} + 56000 @ ${dataset2} + 56000 @ ${dataset3} + 22400
+#   @ ${dataset4} + 16800 @ ${dataset5} + 38400 @ ${dataset6} + 11200 @ ${dataset7}
+#   + 22400 @ ${dataset8} + 22400 @ ${dataset9} + 84000 @ ${dataset10}  + 20000 @ ${dataset11}
+#   + 5600 @ ${dataset12} + 168 @ ${dataset13} + 56000 @ ${dataset14} + 74000 @ ${dataset15}
+#   + 480 @ ${dataset16} + 19200 @ ${dataset17} + 4800 @ ${dataset18}
+#   + 2400 @ ${dataset22} + 600 @ ${dataset23}
+#   + 36000 @ ${dataset26} + 9400 @ ${dataset27} + 36000 @ ${dataset28} + 1400 @ ${dataset29}
+#   + 7200 @ ${dataset30} + 14400 @ ${dataset31} + 28800 @ ${dataset32} + 12000 @ ${dataset33}
+
+# missing:
+# 4800 @ ${dataset20} 
+
+# test_dataset: 100 @ ARKitScenes_Multi(split='test', ROOT='../../../cut3r_data/processed_arkitscene/', resolution=${resolution_stage1} , num_views=${num_test_views}, seed=42, n_corres=${n_corres_test})
+
+enable_joint_render_and_3d_sup: False

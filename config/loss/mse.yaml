@@ -1,0 +1,3 @@
+mse:
+  weight: 1.0
+  average_over_mask: False

@@ -1,0 +1,109 @@
+# @package _global_
+
+defaults:
+  # - /dataset@_group_.re10k: re10k
+  # - /dataset@_group_.dl3dv: dl3dv
+  - /dataset@_group_.scannetpp: scannetpp
+  # - /dataset@_group_.co3d: co3d
+  - override /model/encoder: noposplat
+  - override /model/encoder/backbone: croco
+  - override /loss: [mse, lpips]
+
+wandb:
+  # name: re10k_dl3dv
+  # tags: [re10k_dl3dv, 256x256]
+  # name: re10k_scannetpp
+  # tags: [re10k_scannetpp, 256x256]
+  name: re10k_co3d
+  tags: [re10k_co3d, 256x256]
+
+model:
+  encoder:
+    gs_params_head_type: dpt_gs
+    pose_free: true
+    intrinsics_embed_loc: encoder
+    intrinsics_embed_type: token
+    pretrained_weights: './pretrained_weights/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth'
+    backbone:
+      name: croco_multi_rw
+      enable_temporal_pe: true
+      model: ViTLarge_BaseDecoder_qknorm
+    name: noposplat_multi
+  decoder:
+    make_scale_invariant: true
+
+
+# dataset:
+  # re10k:
+  #   view_sampler:
+  #     warm_up_steps: 9375
+  #     num_context_views: 9
+  #     middle_context_view: true
+  #     # hack view sampler to support stride=1~4 training.
+  #     min_distance_between_context_views: 6 # from 45
+  #     max_distance_between_context_views: 11 # from 90
+  #     min_distance_to_context_views: 1
+  #     initial_min_distance_between_context_views: 3 # from 25
+  #     initial_max_distance_between_context_views: 3
+  # dl3dv:
+  #   view_sampler:
+  #     warm_up_steps: 9375
+  #     num_context_views: 9
+  #     middle_context_view: true
+  #     # hack view sampler to support stride=1~4 training.
+  #     min_distance_between_context_views: 2 # from 8
+  #     max_distance_between_context_views: 4 # from 22
+  #     min_distance_to_context_views: 1
+  #     initial_min_distance_between_context_views: 1 # from 5 
+  #     initial_max_distance_between_context_views: 2 # from 7
+
+  # scannetpp: # ! identical to dl3dv here
+  #   view_sampler:
+  #     warm_up_steps: 9375
+  #     num_context_views: 9
+  #     middle_context_view: true
+  #     min_distance_between_context_views: 1 # from 0
+  #     max_distance_between_context_views: 8 # from 15
+  #     min_distance_to_context_views: 1
+  #     initial_min_distance_between_context_views: 1 # from 5 
+  #     initial_max_distance_between_context_views: 3 # from 5
+
+  # co3d: # ! object-centric. how?
+  #   view_sampler:
+  #     warm_up_steps: 9375
+  #     num_context_views: 9
+  #     middle_context_view: true
+  #     min_distance_between_context_views: 1 # from 0
+  #     max_distance_between_context_views: 10 # from 15
+  #     min_distance_to_context_views: 1
+  #     initial_min_distance_between_context_views: 1 # from 5 
+  #     initial_max_distance_between_context_views: 4 # from 5
+
+
+
+optimizer:
+  lr: 2e-4
+  warm_up_steps: 125
+  backbone_lr_multiplier: 0.1
+
+data_loader:
+  train:
+    # batch_size: 8  # 8 for each dataset, since we have 2 datasets, the total batch size is 16
+    # batch_size: 2  # avoid oom, 60gib
+    # batch_size: 3  # 80.5gib
+    batch_size: 1  # for debug
+
+
+checkpointing:
+  # every_n_train_steps: 9375
+  every_n_train_steps: 5000
+
+trainer:
+  # max_steps: 18751 # bs=8
+  # max_steps: 50002 # bs=3
+  max_steps: 75004 # bs=2
+  # max_steps: 37502 # bs=2, resume from another 18751
+  # precision: bf16-mixed
+  # precision: 32-true
+  val_check_interval: 5000
+  # val_check_interval: 1

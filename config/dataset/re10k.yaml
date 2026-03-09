@@ -1,0 +1,21 @@
+defaults:
+  - base_dataset
+  - view_sampler: bounded
+  - optional view_sampler_dataset_specific_config@view_sampler: bounded_re10k
+
+name: re10k
+# roots: [datasets/re10k]
+# roots: [/cpfs01/user/lanyushi/3d-dataset/dust3r-dataset/pixelSplat/re10k]
+# roots: [/cpfs04/shared/landmark_3dgen/lvzhaoyang_group/yslan/dust3r-dataset/pixelSplat/re10k]
+# roots: [/oss/Repo/dust3r-follow-up/NoPoSplat/datasets/re10k]
+roots: [/mnt/yslan-data/pixelSplat/re10k]
+
+input_image_shape: [256, 256]
+original_image_shape: [360, 640]
+cameras_are_circular: false
+
+baseline_min: 1e-3
+baseline_max: 1e10
+max_fov: 100.0
+
+visualize: false

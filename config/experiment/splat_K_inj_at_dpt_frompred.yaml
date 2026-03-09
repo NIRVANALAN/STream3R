@@ -1,0 +1,14 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_co3d_pired_stage3_noKInjection_splat_K_inj_at_dpt
+  # - dyna_resolution_dataset # include all dust3r datasets
+# ! enable two new predictions. others remain the same? Add another two datasets.
+model:
+  encoder:
+    backbone:
+      # intrinsics_embed_type: 'linear' # directly add to the dpt head input
+      intrinsics_embed_type: 'linear-from-pred' # directly add to the dpt head input
+
+data_loader:
+  train:
+    batch_size: 16

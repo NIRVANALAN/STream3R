@@ -1,0 +1,6 @@
+# @package _global_
+
+dataset:
+  re10k:
+    view_sampler:
+      index_path: assets/evaluation_index_re10k.json

@@ -1,0 +1,20 @@
+defaults:
+  - base_dataset
+  - view_sampler: bounded
+
+name: scannet_pose
+roots: [datasets/scannet_pose_test_1500]
+make_baseline_1: true
+augment: true
+
+input_image_shape: [256, 256]
+original_image_shape: [720, 960]
+cameras_are_circular: false
+
+baseline_min: 1e-3
+baseline_max: 1e2
+max_fov: 120.0
+
+skip_bad_shape: false
+
+visualize: false

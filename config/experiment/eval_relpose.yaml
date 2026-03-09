@@ -1,0 +1,18 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio-hybridCA
+
+# eval:
+eval_dataset: "sintel"
+output_dir: eval_results
+device: "cuda"
+full_seq: False
+size: 512
+revisit: 1
+pose_eval_stride: 1
+no_crop: True
+seq_list: null # to return None in python
+freeze_state: False
+model_name: "ours"
+solve_pose: False

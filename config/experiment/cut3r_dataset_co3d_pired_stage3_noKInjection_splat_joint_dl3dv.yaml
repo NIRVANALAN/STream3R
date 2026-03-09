@@ -1,0 +1,18 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_co3d_pired_stage3_noKInjection_splat_joint
+  - /dataset@_group_.dl3dv: dl3dv
+
+
+dataset:
+  dl3dv:
+    view_sampler:
+
+      # min_distance_between_context_views: 8
+      # max_distance_between_context_views: 22
+      # min_distance_to_context_views: 0
+      # initial_min_distance_between_context_views: 5
+      # initial_max_distance_between_context_views: 7
+      middle_context_view: False
+      warm_up_steps: 9375
+      num_context_views: 2

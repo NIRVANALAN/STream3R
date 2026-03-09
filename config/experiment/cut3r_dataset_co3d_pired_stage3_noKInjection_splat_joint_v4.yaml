@@ -1,0 +1,42 @@
+# @package _global_
+defaults:
+  # - cut3r_dataset_co3d_pired_stage3_noKInjection_splat_joint
+  - cut3r_dataset_co3d_pired_stage3_noKInjection_splat_joint
+  # - cut3r_dataset_v12_noKInjection_CamInj_dynaReso-h200-tuneRatio
+
+# hybrid_loading: True
+num_views: 4 #
+
+data_loader:
+  train:
+    batch_size: 8
+
+
+model:
+  encoder:
+    backbone:
+      # enable_camera_token: False # predict camera
+      enable_camera_token: True # predict camera
+      intrinsics_embed_loc: 'dpt'
+      intrinsics_embed_type: 'linear'
+
+
+# view sampler for v>2
+dataset:
+  re10k: # ! object-centric. how?
+    view_sampler:
+      warm_up_steps: 15000
+      num_context_views: 2
+      middle_context_view: false
+      # min_distance_between_context_views: 12 # from 45
+      # max_distance_between_context_views: 20 # from 90
+      # min_distance_to_context_views: 1
+      # initial_min_distance_between_context_views: 6 # from 25
+      # initial_max_distance_between_context_views: 6
+
+
+      min_distance_between_context_views: 18 # from 45
+      max_distance_between_context_views: 25 # from 90
+      min_distance_to_context_views: 1
+      initial_min_distance_between_context_views: 8 # from 25
+      initial_max_distance_between_context_views: 18

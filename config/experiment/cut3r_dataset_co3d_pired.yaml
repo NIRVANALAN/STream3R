@@ -1,0 +1,37 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_debug
+
+# num_views: 4
+# num_views: 2 # pre-training stage
+# num_test_views: ${num_views}
+
+
+data_loader:
+  train:
+    batch_size: 8 # 23gib vram. faster data loading
+    # batch_size: 12 # 
+    # batch_size: 16 # 38 GiB. cut3r uses bs=16
+    # batch_size: 32 # 71GB
+
+  val:
+    num_workers: 0
+    batch_size: 1 #
+
+trainer:
+  max_steps: 50000 
+  precision: bf16-mixed
+  accumulate_grad_batches: 1
+  val_check_interval: 5000
+
+
+checkpointing:
+  every_n_train_steps: 5000 #
+
+optimizer:
+  lr: 1e-4 # 
+  warm_up_steps: 125
+  backbone_lr_multiplier: 0.1
+
+dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root_cpfs}/processed_co3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+train_dataset: 44800 @ ${dataset0} # 256x256 single resolution. paired view pretrianing.

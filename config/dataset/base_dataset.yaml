@@ -1,0 +1,6 @@
+make_baseline_1: true
+relative_pose: true
+augment: true
+background_color: [0.0, 0.0, 0.0]
+overfit_to_scene: null
+skip_bad_shape: true

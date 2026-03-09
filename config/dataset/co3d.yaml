@@ -1,0 +1,40 @@
+# https://github.com/Chrixtar/latentsplat/blob/main/config/dataset/co3d_hydrant.yaml
+
+defaults:
+  - base_dataset
+  - view_sampler: bounded
+  - optional view_sampler_dataset_specific_config@view_sampler: bounded_co3d # ? why failed
+  # - optional view_sampler_dataset_specific_config@view_sampler: bounded_scannetpp
+
+name: co3d # why failed
+# name: scannetpp #
+# roots: [/oss/3d-dataset/dust3r-dataset/Chunks/co3d-v2] # just ignore those video with differnet resolution
+# roots: [/oss/3d-dataset/dust3r-dataset/Chunks/co3d-v2_fix]  # ! not fixed.
+roots: [/oss/3d-dataset/dust3r-dataset/Chunks/co3d-v2_fix2]  # ! not fixed.
+
+input_image_shape: [256, 256]
+# original_image_shape: [384, 512] # already center cropped and resized?
+original_image_shape: [512, 1110] # already center cropped and resized?
+cameras_are_circular: true # ! 
+
+baseline_min: 1e-3
+baseline_max: 1e2
+max_fov: 120.0
+
+# skip_bad_shape: true # 
+skip_bad_shape: false
+
+visualize: false
+
+view_sampler:
+  warm_up_steps: 85000
+  num_context_views: 9
+  # middle_context_view: true
+  middle_context_view: false
+  min_distance_between_context_views: 1 # from 0
+  max_distance_between_context_views: 8 # from 15
+  min_distance_to_context_views: 1
+  initial_min_distance_between_context_views: 1 # from 5 
+  initial_max_distance_between_context_views: 4 # from 5
+
+make_baseline_1: false # ! check https://github.com/Chrixtar/latentsplat/blob/main/src/dataset/dataset_co3d.py

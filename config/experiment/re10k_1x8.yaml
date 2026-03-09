@@ -1,0 +1,42 @@
+# @package _global_
+
+defaults:
+  - /dataset@_group_.re10k: re10k
+  - override /model/encoder: noposplat
+  - override /model/encoder/backbone: croco
+  - override /loss: [mse, lpips]
+
+wandb:
+  name: re10k
+  tags: [re10k, 256x256]
+
+model:
+  encoder:
+    gs_params_head_type: dpt_gs
+    pose_free: true
+    intrinsics_embed_loc: encoder
+    intrinsics_embed_type: token
+    pretrained_weights: './pretrained_weights/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth'
+  decoder:
+    make_scale_invariant: true
+
+dataset:
+  re10k:
+    view_sampler:
+      warm_up_steps: 150_000
+
+optimizer:
+  lr: 1e-4
+  warm_up_steps: 2000
+  backbone_lr_multiplier: 0.1
+
+data_loader:
+  train:
+    batch_size: 8
+
+trainer:
+  max_steps: 300_001
+  val_check_interval: 2000
+
+checkpointing:
+  every_n_train_steps: 150_000

@@ -1,0 +1,175 @@
+# @package _global_
+defaults:
+  - cut3r_dataset_debug
+
+# num_views: 12 # ! following cut3r training
+num_views: 10 # ! following cut3r training
+allow_repeat: True
+# num_views: 2 # pre-training stage
+
+fixed_length: False
+
+num_test_views: ${num_views}
+
+
+data_loader:
+  train:
+    batch_size: 4 # 
+    # batch_size: 12 # 
+    # batch_size: 16 # ! for using more datasets
+    # batch_size: 32 # 71GB
+
+  val:
+    num_workers: 0
+    batch_size: 1 #
+
+
+
+model:
+  encoder:
+    backbone:
+      # name: must3r_reimpl # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+      # asymmetry_decoder: false # no self.dec_blocks 2
+
+      intrinsics_embed_loc: "none"
+      # intrinsics_embed_degree: 0
+      intrinsics_embed_type: "none"
+
+trainer:
+  max_steps: 300000 
+  precision: bf16-mixed
+  accumulate_grad_batches: 1
+  val_check_interval: 5000 # much slower now
+
+
+checkpointing:
+  every_n_train_steps: 2500 #
+
+optimizer:
+  lr: 1e-5 # ! following stereo4D, make lr smaller
+  warm_up_steps: 1250
+  # backbone_lr_multiplier: 0.4 # 1e-5 for backbone update.
+  backbone_lr_multiplier: 0.1 # 1e-6 for backbone update.
+
+
+
+dataset2: WildRGBD_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_wildrgbd_mp", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+dataset3: ARKitScenes_Multi(allow_repeat=${allow_repeat}, split='train', ROOT='../../../cut3r_data/processed_arkitscene/', aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset3_stage1: ARKitScenes_Multi(allow_repeat=${allow_repeat}, split='train', ROOT='../../../cut3r_data/processed_arkitscene/', aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset4: ARKitScenesHighRes_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_arkitscene_highres", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset4: ARKitScenesHighRes_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root_cpfs}/processed_arkitscene_highres", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset5: ScanNetpp_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_scannetpp_fix/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset6: ScanNet_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_scannet/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset7: HyperSim_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_hypersim", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+dataset8: BlendedMVS_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_blendedmvs/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset9: MegaDepth_Multi(allow_repeat=${allow_repeat}, split="train", ROOT="../../../cut3r_data/processed_megadepth", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset10: MapFree_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_mapfree/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset11: Waymo_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_waymo/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset12: VirtualKITTI2_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_vkitti", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset13: UnReal4K_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_unreal4k/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset14: TartanAir_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_tartanair/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+dataset15: DL3DV_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_dl3dv_ours_parts/processed_dl3dv_ours", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+dataset16: Cop3D_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_cop3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset17: MVImgNet_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_mvimgnet/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset17: MVImgNet_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_mvimgnet_new/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset18: RE10K_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_re10k/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset19: OmniObject3D_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_omniobject3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+dataset20: ThreeDKenBurns(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_3dkb/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset21: IRS(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_irs/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset22: SynScapes(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_synscapes/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset23: UrbanSyn(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_urbansyn/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset24: EDEN_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_eden", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset25: SmartPortraits_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_smartportraits", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+dataset26: DynamicReplica(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_dynamic_replica/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset27: Spring(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_spring/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset28: BEDLAM_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_bedlam", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset29: MVS_Synth_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_mvs_synth", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset30: PointOdyssey_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_pointodyssey", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+# dataset33: HOI4D_Multi(allow_repeat=True, split=None, ROOT="../../data/custom_data/processed_hoi4d/",
+#   aug_crop=16, resolution=[(512, 384), (512, 336), (512, 288), (512, 256), (512, 208),
+#   (512, 144), (384, 512), (336, 512), (288, 512), (256, 512)], transform=SeqColorJitter,
+#   num_views=${num_views}, n_corres=${n_corres_train})
+
+dataset33: HOI4D_Multi(allow_repeat=True, split=None, ROOT="../../../cut3r_data/processed_hoi4d",
+  aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+# dataset31: UASOL_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="../../../cut3r_data/processed_uasol", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset32: MP3D_Multi(allow_repeat=${allow_repeat}, split=None, ROOT="../../../cut3r_data/processed_mp3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+
+# dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root_cpfs}/processed_co3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+dataset0: Co3d_Multi(allow_repeat=${allow_repeat}, split='train', ROOT="${dataset_root}/processed_co3d/", aug_crop=16, resolution=${resolution_stage1}, transform=SeqColorJitter, num_views=${num_views}, n_corres=${n_corres_train})
+
+# ! static + dynamic datasets
+# https://github.com/CUT3R/CUT3R/blob/main/config/stage2.yaml
+
+# train_dataset: 44800 @ ${dataset0} + 56000 @ ${dataset2} + 56000 @ ${dataset3} 
+#   + 42000 @ ${dataset6} + 6000 @ ${dataset9} + 18000 @ ${dataset4} + 60000 @ ${dataset10}
+#   + 33600 @ ${dataset7} + 2400 @ ${dataset12} + 180 @ ${dataset13} + 18000 @ ${dataset14} 
+#   + 6000 @ ${dataset5} + 24000 @ ${dataset32} + 12000 @ ${dataset24} 
+#   + 480 @ ${dataset16} + 2400 @ ${dataset22} + 600 @ ${dataset23} 
+#   + 36000 @ ${dataset26} + 9400 @ ${dataset27} + 1400 @ ${dataset29}
+#   + 20000 @ ${dataset30} 
+
+# ! 22 datasets in total.
+train_dataset: 44800 @ ${dataset0} + 56000 @ ${dataset2} + 56000 @ ${dataset3} + 22400
+  @ ${dataset4} + 70000 @ ${dataset6} + 33600 @ ${dataset7} + 12000 @ ${dataset33}
+  + 22400 @ ${dataset9} + 84000 @ ${dataset10} + 56000 @ ${dataset11}
+  + 5600 @ ${dataset12} + 168 @ ${dataset13} + 56000 @ ${dataset14} + 36000 @ ${dataset28}
+  + 2400 @ ${dataset22} + 600 @ ${dataset23} + 36000 @ ${dataset26} + 9400 @ ${dataset27} 
+  + 1400 @ ${dataset29} + 7200 @ ${dataset30} + 28800 @ ${dataset32} + 22400 @ ${dataset8}
+
+# + 2800 @ ${dataset5}
+
+# 12000 @ ${dataset33}  # ! to add
+
+# train_dataset: 16800 @ ${dataset5}
+# + 16800 @ ${dataset5} # ! why failed, no idea...
+
+# ! missing: 
+
+# ! camera_only: + 480 @ ${dataset16} 
+  
+  # 2400 @ ${dataset21}  + 19200 @ ${dataset17} + 20000 @ ${dataset11} + 12000 @ ${dataset33} + 4800 @ ${dataset18} + + 36000 @ ${dataset28}
+
+  # ! will not use: + 4800 @ ${dataset20} + + 19200 @ ${dataset25} + + 14400 @ ${dataset31} + 74000 @ ${dataset15}
+
+# ! missing: bedlam, dl3dv, re10k, mvi, waymo
+
+# ! dynamic datasets, all except hoi4d is ready. hoi4d depth is missing here. But this dataset is egocentric and shall be helpful in the long run. Downloading it again.
+# train_dataset: 
+# 480 @ ${dataset16} + 2400 @ ${dataset22} + 600 @ ${dataset23} 
+#   + 36000 @ ${dataset26} + 9400 @ ${dataset27} + 1400 @ ${dataset29}
+#   + 7200 @ ${dataset30} # + 12000 @ ${dataset33}
+
+# train_dataset: 12000 @ ${dataset33} # ! not processed well. fixing it.
+
+# ! debug mvi here
+# train_dataset: 16000 @ ${dataset17}
+
+# train_dataset: 
+
+# test_dataset: 100 @ ARKitScenes_Multi(split='test', ROOT='../../../cut3r_data/processed_arkitscene/', resolution=(512, 384), num_views=${num_test_views}, seed=42, n_corres=${n_corres_test})
+test_dataset: 100 @ ARKitScenes_Multi(split='test', ROOT='../../../cut3r_data/processed_arkitscene/', resolution=${resolution_stage1} , num_views=${num_test_views}, seed=42, n_corres=${n_corres_test})
+
+
+# ! check the following re-processed
+
+# train_dataset: 100800 @ ${dataset10}
+
+# ! also, add megadepth in the next run
+# train_dataset: 33600 @ ${dataset8} # ! b-mvs works on 4 views only here.
+# 78400 @ ${dataset11} +  # ! waymo not available
+# + 160000 @ ${dataset15} # ! dl3dv not available for now
+
+# 16000 @ ${dataset17} # mvi has loading bug? fixed, but since camera_only, will not use that for training.
+
+# +  # ! scannet foramt is wrong. fix.
+
+hybrid_loading: False

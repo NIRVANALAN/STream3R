@@ -1,0 +1,117 @@
+# @package _global_
+
+defaults:
+  # - /dataset@_group_.scannetpp: scannetpp
+  - /dataset@_group_.co3d: co3d
+  # - /dataset@_group_.scannetpp: scannetpp
+  - override /model/encoder: noposplat
+  - override /model/encoder/backbone: croco
+  - override /loss: [mse, lpips]
+
+wandb:
+  # name: re10k
+  # tags: [re10k, 256x256]
+  name: re10k_co3d
+  tags: [re10k_co3d, 256x256]
+
+# model:
+#   encoder:
+#     backbone:
+#       name: croco_multi_rw
+#     name: noposplat_multi
+#     gs_params_head_type: dpt_gs
+#     pose_free: true
+#     intrinsics_embed_loc: encoder
+#     intrinsics_embed_type: token
+#     pretrained_weights: './pretrained_weights/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth'
+#   decoder:
+#     make_scale_invariant: true
+
+model:
+  encoder:
+    gs_params_head_type: dpt_gs
+    pose_free: true
+    intrinsics_embed_loc: encoder
+    intrinsics_embed_type: token
+    # pretrained_weights: './pretrained_weights/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth'
+    pretrained_weights: ''
+    backbone:
+      # name: croco_multi_rw
+      # name: croco_multi_rw_cut3r # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+      name: must3r_reimpl # ! update the dict in src/model/encoder/backbone/backbone_croco.py:62
+      asymmetry_decoder: false # no self.dec_blocks 2
+      # enable_temporal_pe: true
+      enable_temporal_pe: false
+      model: ViTLarge_BaseDecoder_qknorm
+    name: noposplat_multi # ! update the dict in src/model/encoder/__init__.py
+  decoder:
+    make_scale_invariant: true
+
+
+optimizer:
+  # lr: 2e-4
+  # lr: 1e-4
+  # lr: 2.5e-5 # ! same as stereo4D
+  lr: 1e-5 # ! same as stereo4D
+  warm_up_steps: 125
+  backbone_lr_multiplier: 0.1
+  # backbone_lr_multiplier: 0.01 # 1e-6 
+
+data_loader:
+  train:
+    batch_size: 2 # ! 
+    # batch_size: 12
+    # batch_size: 2
+
+# trainer:
+#   max_steps: 18751
+#   # max_steps: 37502 # shall double the iteration since bs halved.
+#   val_check_interval: 500
+
+trainer:
+  max_steps: 75004 # 
+  # max_steps: 150008 # 15
+  precision: bf16-mixed
+  val_check_interval: 5000
+  accumulate_grad_batches: 1
+
+
+checkpointing:
+  # every_n_train_steps: 9375
+  every_n_train_steps: 5000
+
+# dataset:
+#   re10k:
+#     view_sampler:
+#       warm_up_steps: 9375
+#       num_context_views: 8
+#       middle_context_view: true
+
+
+# dataset:
+#   scannetpp: # ! identical to dl3dv here
+#     view_sampler:
+#       warm_up_steps: 9375
+#       num_context_views: 9
+#       middle_context_view: true
+#       min_distance_between_context_views: 1 # from 0
+#       max_distance_between_context_views: 8 # from 15
+#       min_distance_to_context_views: 1
+#       initial_min_distance_between_context_views: 1 # from 5 
+#       initial_max_distance_between_context_views: 3 # from 5
+
+
+dataset:
+  co3d: # ! object-centric. how?
+    view_sampler:
+      warm_up_steps: 30000
+      # num_context_views: 2
+      num_context_views: 8
+      middle_context_view: false
+      # middle_context_view: true
+
+      # min_distance_between_context_views: 24
+      # max_distance_between_context_views: 64
+      # min_distance_to_context_views: 1
+      # initial_min_distance_between_context_views: 8
+      # initial_max_distance_between_context_views: 16

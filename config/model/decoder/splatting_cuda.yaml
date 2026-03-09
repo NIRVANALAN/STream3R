@@ -1,0 +1,3 @@
+name: splatting_cuda
+background_color: [0.0, 0.0, 0.0]
+make_scale_invariant: false
