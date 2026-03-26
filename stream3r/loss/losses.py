@@ -236,7 +236,7 @@ class CausalLoss(MultiLoss):
         pred_depth, pred_depth_conf = preds["depth"], preds["depth_conf"]
 
         # loss for pts3d global
-        loss_pts3d_global = point_loss(pred_pts3d_global, pred_conf_global, gt_pts3d_global, valid_mask_global, gradient_loss=self.gradient_loss, temporal_matching_loss=False, all_mean=True, valid_range=0.98, ormalize_pred=True, normalize_gt=True, normalize_using_first_view=False)
+        loss_pts3d_global = point_loss(pred_pts3d_global, pred_conf_global, gt_pts3d_global, valid_mask_global, gradient_loss=self.gradient_loss, temporal_matching_loss=False, all_mean=True, valid_range=0.98, normalize_pred=True, normalize_gt=True, normalize_using_first_view=False)
 
         # loss for depth
         loss_depth = depth_loss(pred_depth, pred_depth_conf, gt_depth, valid_mask_depth, gradient_loss=self.gradient_loss, temporal_matching_loss=False, all_mean=True, valid_range=0.98, normalize_pred=True, normalize_gt=True, normalize_using_first_view=False)
