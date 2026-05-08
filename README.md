@@ -73,6 +73,7 @@
 
 ## :fire: News
 
+- [May 8, 2026] Check out our new 4D Reconstruction Model [4RC](https://github.com/Luo-Yihang/4RC), ICML 2026.
 - [Mar 9, 2026] Check out the DUSt3R-based metric-scale STream3R[α] version on the [alpha branch](https://github.com/NIRVANALAN/STream3R/tree/alpha).
 - [Jan 26, 2026] Accepted to ICLR 2026!
 - [Sep 16, 2025] The complete training code is released!
